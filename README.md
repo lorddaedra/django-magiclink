@@ -76,7 +76,6 @@ Add the following settings to your `settings.py` (you will need to replace the t
 # Set Djangos login URL to the magiclink login page
 LOGIN_URL = 'magiclink:login'
 
-MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = 'magiclink/login_sent.html'
 MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = 'magiclink/login_failed.html'
 
 # Optional:
@@ -106,7 +105,7 @@ See the login docs if you want to create your own login view
 
 #### Login sent page
 
-After the user has requested a magic link, they will be redirected to a success page. The HTML for this page can be overridden using the setting `MAGICLINK_LOGIN_SENT_TEMPLATE_NAME`. It is advised you return a simple message telling the user to check their email:
+After the user has requested a magic link, they will be redirected to a success page. It is advised you return a simple message telling the user to check their email:
 
 ```html
 <h1>Check your email</h1>
@@ -192,9 +191,6 @@ Below are the different settings that can be overridden. To do so place the sett
 *Note: Each of the url / redirect settings can either be a URL or url name*
 
 ```python
-
-# Override the login page template. See 'Login sent page' in the Setup section
-MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = 'myapp/login_sent.html'
 
 # Override the template that shows when the user tries to login with a
 # magic link that is not valid. See 'Login failed page' in the Setup section

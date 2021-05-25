@@ -57,7 +57,7 @@ class Login(TemplateView):
 
 
 class LoginSent(TemplateView):
-    template_name = settings.LOGIN_SENT_TEMPLATE_NAME
+    template_name = 'magiclink/login_sent.html'
 
 
 class LoginVerify(TemplateView):
