@@ -97,7 +97,7 @@ class LoginVerify(TemplateView):
 
 
 class Signup(TemplateView):
-    template_name = settings.SIGNUP_TEMPLATE_NAME
+    template_name = 'magiclink/signup.html'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

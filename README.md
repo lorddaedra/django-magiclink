@@ -80,7 +80,6 @@ LOGIN_URL = 'magiclink:login'
 # If this setting is set to False a user account will be created the first
 # time a user requests a login link.
 MAGICLINK_REQUIRE_SIGNUP = True
-MAGICLINK_SIGNUP_TEMPLATE_NAME = 'magiclink/signup.html'
 ```
 
 See [additional configuration settings](#configuration-settings) for all of the different available settings.
@@ -159,7 +158,7 @@ If this email template is not to your liking you can override the email template
 
 #### Signup page
 
-If you want users to have to signup before being able to log in you will want to override the signup page template using the `MAGICLINK_SIGNUP_TEMPLATE_NAME` setting. This is needed when `MAGICLINK_REQUIRE_SIGNUP = True`. On successful signup the user will be sent a login email with a magic link.
+This is needed when `MAGICLINK_REQUIRE_SIGNUP = True`. On successful signup the user will be sent a login email with a magic link.
 
 When overriding this template please ensure the following content is included:
 
@@ -193,8 +192,6 @@ Below are the different settings that can be overridden. To do so place the sett
 # If this setting is set to False a user account will be created the first time
 # a user requests a login link.
 MAGICLINK_REQUIRE_SIGNUP = True
-# Override the login page template. See 'Login sent page' in the Setup section
-MAGICLINK_SIGNUP_TEMPLATE_NAME = 'myapp/signup.html'
 
 # Set Djangos login redirect URL to be used once the user opens the magic link
 # This will be used whenever a ?next parameter is not set on login

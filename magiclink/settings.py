@@ -13,8 +13,6 @@ if not isinstance(REQUIRE_SIGNUP, bool):
     raise ImproperlyConfigured('"MAGICLINK_REQUIRE_SIGNUP" must be a boolean')
 SIGNUP_LOGIN_REDIRECT = getattr(settings, 'MAGICLINK_SIGNUP_LOGIN_REDIRECT', '')
 
-SIGNUP_TEMPLATE_NAME = getattr(settings, 'MAGICLINK_SIGNUP_TEMPLATE_NAME', 'magiclink/signup.html')
-
 try:
     TOKEN_LENGTH = int(getattr(settings, 'MAGICLINK_TOKEN_LENGTH', 50))
 except ValueError:

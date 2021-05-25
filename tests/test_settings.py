@@ -11,13 +11,6 @@ def test_login_sent_redirect(settings):
     assert mlsettings.LOGIN_SENT_REDIRECT == settings.MAGICLINK_LOGIN_SENT_REDIRECT  # NOQA: E501
 
 
-def test_signup_template_name(settings):
-    settings.MAGICLINK_SIGNUP_TEMPLATE_NAME = 'signup.html'
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.SIGNUP_TEMPLATE_NAME == settings.MAGICLINK_SIGNUP_TEMPLATE_NAME  # NOQA: E501
-
-
 def test_signup_login_redirect(settings):
     settings.MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/loggedin'
     from magiclink import settings as mlsettings
