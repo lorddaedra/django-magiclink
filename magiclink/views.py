@@ -53,10 +53,6 @@ class Login(TemplateView):
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
-        if settings.REQUIRE_SAME_BROWSER:
-            cookie_name = f'magiclink{magiclink.pk}'
-            response.set_cookie(cookie_name, magiclink.cookie_value)
-            log.info(f'Cookie {cookie_name} set for {email}')
         return response
 
 
@@ -76,8 +72,6 @@ class LoginVerify(TemplateView):
                 context = self.get_context_data(**kwargs)
                 # The below settings are left in for backward compatibility
                 context['ONE_TOKEN_PER_USER'] = settings.ONE_TOKEN_PER_USER
-                context['REQUIRE_SAME_BROWSER'] = settings.REQUIRE_SAME_BROWSER
-                context['REQUIRE_SAME_IP'] = settings.REQUIRE_SAME_IP
                 context['ALLOW_SUPERUSER_LOGIN'] = settings.ALLOW_SUPERUSER_LOGIN  # NOQA: E501
                 context['ALLOW_STAFF_LOGIN'] = settings.ALLOW_STAFF_LOGIN
 
@@ -89,7 +83,7 @@ class LoginVerify(TemplateView):
                     return self.render_to_response(context)
 
                 try:
-                    magiclink.validate(request, email)
+                    MagicLink.validate(magiclink, email)
                 except MagicLinkError as error:
                     context['login_error'] = str(error)
 
@@ -102,9 +96,6 @@ class LoginVerify(TemplateView):
 
         magiclink = MagicLink.objects.get(token=token)
         response = HttpResponseRedirect(magiclink.redirect_url)
-        if settings.REQUIRE_SAME_BROWSER:
-            cookie_name = f'magiclink{magiclink.pk}'
-            response.delete_cookie(cookie_name, magiclink.cookie_value)
         return response
 
 
@@ -156,10 +147,6 @@ class Signup(TemplateView):
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
-        if settings.REQUIRE_SAME_BROWSER:
-            cookie_name = f'magiclink{magiclink.pk}'
-            response.set_cookie(cookie_name, magiclink.cookie_value)
-            log.info(f'Cookie {cookie_name} set for {email}')
         return response
 
 

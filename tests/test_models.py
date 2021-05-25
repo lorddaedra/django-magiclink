@@ -56,8 +56,6 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
         'expiry': ml.expiry,
         'ip_address': ml.ip_address,
         'created': ml.created,
-        'require_same_ip': mlsettings.REQUIRE_SAME_IP,
-        'require_same_browser': mlsettings.REQUIRE_SAME_BROWSER,
         'token_uses': mlsettings.TOKEN_USES,
         'style': mlsettings.EMAIL_STYLES,
     }
@@ -78,8 +76,7 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
 def test_validate(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
-    ml_user = ml.validate(request=request, email=user.email)
+    ml_user = MagicLink.validate(ml, email=user.email)
     assert ml_user == user
 
 
@@ -87,8 +84,7 @@ def test_validate(user, magic_link):  # NOQA: F811
 def test_validate_email_ignore_case(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
-    ml_user = ml.validate(request=request, email=user.email.upper())
+    ml_user = MagicLink.validate(ml, email=user.email.upper())
     assert ml_user == user
 
 
@@ -97,9 +93,8 @@ def test_validate_wrong_email(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
     email = 'fake@email.com'
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
     with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=email)
+        MagicLink.validate(ml, email=email)
 
     error.match('Email address does not match')
 
@@ -108,48 +103,13 @@ def test_validate_wrong_email(user, magic_link):  # NOQA: F811
 def test_validate_expired(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
     ml.expiry = timezone.now() - timedelta(seconds=1)
     ml.save()
 
     with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
+        MagicLink.validate(ml, email=user.email)
 
     error.match('Magic link has expired')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
-    assert ml.disabled is True
-
-
-@pytest.mark.django_db
-def test_validate_wrong_ip(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
-    ml.ip_address = '255.255.255.255'
-    ml.save()
-    with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
-
-    error.match('IP address is different from the IP address used to request '
-                'the magic link')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
-    assert ml.disabled is True
-
-
-@pytest.mark.django_db
-def test_validate_different_browser(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = 'bad_value'
-    with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
-
-    error.match('Browser is different from the browser used to request the '
-                'magic link')
 
     ml = MagicLink.objects.get(token=ml.token)
     assert ml.times_used == 1
@@ -160,11 +120,10 @@ def test_validate_different_browser(user, magic_link):  # NOQA: F811
 def test_validate_used_times(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
     ml.times_used = settings.TOKEN_USES
     ml.save()
     with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
+        MagicLink.validate(ml, email=user.email)
 
     error.match('Magic link has been used too many times')
 
@@ -181,11 +140,10 @@ def test_validate_superuser(settings, user, magic_link):  # NOQA: F811
 
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
     user.is_superuser = True
     user.save()
     with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
+        MagicLink.validate(ml, email=user.email)
 
     error.match('You can not login to a super user account using a magic link')
 
@@ -202,11 +160,10 @@ def test_validate_staff(settings, user, magic_link):  # NOQA: F811
 
     request = HttpRequest()
     ml = magic_link(request)
-    request.COOKIES[f'magiclink{ml.pk}'] = ml.cookie_value
     user.is_staff = True
     user.save()
     with pytest.raises(MagicLinkError) as error:
-        ml.validate(request=request, email=user.email)
+        MagicLink.validate(ml, email=user.email)
 
     error.match('You can not login to a staff account using a magic link')
 

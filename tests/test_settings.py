@@ -218,36 +218,6 @@ def test_verify_include_email_bad_value(settings):
         reload(settings)
 
 
-def test_require_same_browser(settings):
-    settings.MAGICLINK_REQUIRE_SAME_BROWSER = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.REQUIRE_SAME_BROWSER == settings.MAGICLINK_REQUIRE_SAME_BROWSER  # NOQA: E501
-
-
-def test_require_same_browser_bad_value(settings):
-    settings.MAGICLINK_REQUIRE_SAME_BROWSER = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
-def test_require_same_ip(settings):
-    settings.MAGICLINK_REQUIRE_SAME_IP = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.REQUIRE_SAME_IP == settings.MAGICLINK_REQUIRE_SAME_IP
-
-
-def test_require_same_ip_bad_value(settings):
-    settings.MAGICLINK_REQUIRE_SAME_IP = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_one_token_per_user(settings):
     settings.MAGICLINK_ONE_TOKEN_PER_USER = True
     from magiclink import settings as mlsettings

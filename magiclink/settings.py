@@ -64,14 +64,6 @@ VERIFY_INCLUDE_EMAIL = getattr(settings, 'MAGICLINK_VERIFY_INCLUDE_EMAIL', True)
 if not isinstance(VERIFY_INCLUDE_EMAIL, bool):
     raise ImproperlyConfigured('"MAGICLINK_VERIFY_INCLUDE_EMAIL" must be a boolean')
 
-REQUIRE_SAME_BROWSER = getattr(settings, 'MAGICLINK_REQUIRE_SAME_BROWSER', True)
-if not isinstance(REQUIRE_SAME_BROWSER, bool):
-    raise ImproperlyConfigured('"MAGICLINK_REQUIRE_SAME_BROWSER" must be a boolean')
-
-REQUIRE_SAME_IP = getattr(settings, 'MAGICLINK_REQUIRE_SAME_IP', True)
-if not isinstance(REQUIRE_SAME_IP, bool):
-    raise ImproperlyConfigured('"MAGICLINK_REQUIRE_SAME_IP" must be a boolean')
-
 ONE_TOKEN_PER_USER = getattr(settings, 'MAGICLINK_ONE_TOKEN_PER_USER', True)
 if not isinstance(ONE_TOKEN_PER_USER, bool):
     raise ImproperlyConfigured('"MAGICLINK_ONE_TOKEN_PER_USER" must be a boolean')

@@ -31,7 +31,6 @@ def test_create_magiclink(settings, freezer):
     assert len(magic_link.token) == mlsettings.TOKEN_LENGTH
     assert magic_link.expiry == expiry
     assert magic_link.redirect_url == reverse(settings.LOGIN_REDIRECT_URL)
-    assert len(magic_link.cookie_value) == 36
     assert magic_link.ip_address == remote_addr
 
 

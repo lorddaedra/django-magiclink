@@ -39,7 +39,7 @@ class MagicLinkBackend():
             return
 
         try:
-            user = magiclink.validate(request, email)
+            user = MagicLink.validate(magiclink, email)
         except MagicLinkError as error:
             log.warning(error)
             return

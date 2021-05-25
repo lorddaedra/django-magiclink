@@ -126,8 +126,6 @@ To help tailor the error page and explain the possible reasons the user could no
 
 * `{{ login_error }}` - The reason the login failed (raised by `MagicLink.validate()`)
 * `{{ one_token_per_user }}` - The value of the `MAGICLINK_ONE_TOKEN_PER_USER` setting
-* `{{ require_same_browser }}` - The value of the `MAGICLINK_REQUIRE_SAME_BROWSER` setting
-* `{{ require_same_ip }}` - The value of the `MAGICLINK_REQUIRE_SAME_IP` setting
 * `{{ allow_superuser_login }}` - The value of the `MAGICLINK_ALLOW_SUPERUSER_LOGIN` setting
 * `{{ allow_staff_login }}` - The value of the `MAGICLINK_ALLOW_STAFF_LOGIN` setting
 
@@ -160,8 +158,6 @@ If this email template is not to your liking you can override the email template
 * `{{ expiry }}` - Datetime for when the magiclink expires
 * `{{ ip_address }}` - The IP address of the person who requested the magic link
 * `{{ created }}` - Datetime of when the magic link was created
-* `{{ require_same_ip }}` - The value of `MAGICLINK_REQUIRE_SAME_IP`
-* `{{ require_same_browser }}` - The value of `MAGICLINK_REQUIRE_SAME_BROWSER`
 * `{{ token_uses }}` - The value of `MAGICLINK_TOKEN_USES`
 
 
@@ -271,16 +267,6 @@ MAGICLINK_TOKEN_LENGTH = 50
 # Warning: If this is set to false tokens are more vulnerable to brute force
 MAGICLINK_VERIFY_INCLUDE_EMAIL = True
 
-# Ensure the user who clicked magic link used the same browser as the
-# initial login request.
-# Note: This can cause issues on devices where the default browser is
-# different from the browser being used by the user such as on iOS)
-MAGICLINK_REQUIRE_SAME_BROWSER = True
-
-# Ensure the user who clicked magic link has the same IP address as the
-# initial login request.
-MAGICLINK_REQUIRE_SAME_IP = True
-
 # The number of times a login token can be used before being disabled
 MAGICLINK_TOKEN_USES = 1
 
@@ -310,8 +296,6 @@ Using magic links can be dangerous as poorly implemented login links can be brut
 * The one-time password issued will be valid for 5 minutes before it expires
 * The user's email is specified alongside login tokens to stop URLs being brute-forced
 * Each login token will be at least 20 digits
-* The initial request and its response must take place from the same IP address
-* The initial request and its response must take place in the same browser
 * Each one-time link can only be used once
 * Only the last one-time link issued will be accepted. Once the latest one is issued, any others are invalidated.
 

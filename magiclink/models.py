@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import settings
-from .utils import get_client_ip
 
 User = get_user_model()
 
@@ -28,7 +27,6 @@ class MagicLink(models.Model):
     redirect_url = models.TextField()
     disabled = models.BooleanField(default=False)
     times_used = models.IntegerField(default=0)
-    cookie_value = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(null=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -69,8 +67,6 @@ class MagicLink(models.Model):
             'expiry': self.expiry,
             'ip_address': self.ip_address,
             'created': self.created,
-            'require_same_ip': settings.REQUIRE_SAME_IP,
-            'require_same_browser': settings.REQUIRE_SAME_BROWSER,
             'token_uses': settings.TOKEN_USES,
             'style': settings.EMAIL_STYLES,
         }
@@ -84,47 +80,31 @@ class MagicLink(models.Model):
             html_message=html,
         )
 
-    def validate(
-        self,
-        request: HttpRequest,
-        email: str = '',
-    ) -> AbstractUser:
+    @staticmethod
+    def validate(ml: 'MagicLink', email: str = '') -> AbstractUser:
         if settings.EMAIL_IGNORE_CASE and email:
             email = email.lower()
 
-        if settings.VERIFY_INCLUDE_EMAIL and self.email != email:
+        if settings.VERIFY_INCLUDE_EMAIL and ml.email != email:
             raise MagicLinkError('Email address does not match')
 
-        if timezone.now() > self.expiry:
-            self.disable()
+        if timezone.now() > ml.expiry:
+            ml.disable()
             raise MagicLinkError('Magic link has expired')
 
-        if settings.REQUIRE_SAME_IP:
-            if self.ip_address != get_client_ip(request):
-                self.disable()
-                raise MagicLinkError('IP address is different from the IP '
-                                     'address used to request the magic link')
-
-        if settings.REQUIRE_SAME_BROWSER:
-            cookie_name = f'magiclink{self.pk}'
-            if self.cookie_value != request.COOKIES.get(cookie_name):
-                self.disable()
-                raise MagicLinkError('Browser is different from the browser '
-                                     'used to request the magic link')
-
-        if self.times_used >= settings.TOKEN_USES:
-            self.disable()
+        if ml.times_used >= settings.TOKEN_USES:
+            ml.disable()
             raise MagicLinkError('Magic link has been used too many times')
 
-        user = User.objects.get(email=self.email)
+        user = User.objects.get(email=ml.email)
 
         if not settings.ALLOW_SUPERUSER_LOGIN and user.is_superuser:
-            self.disable()
+            ml.disable()
             raise MagicLinkError(
                 'You can not login to a super user account using a magic link')
 
         if not settings.ALLOW_STAFF_LOGIN and user.is_staff:
-            self.disable()
+            ml.disable()
             raise MagicLinkError(
                 'You can not login to a staff account using a magic link')
 

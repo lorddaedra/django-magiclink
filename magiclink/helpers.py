@@ -1,5 +1,4 @@
 from datetime import timedelta
-from uuid import uuid4
 
 from django.conf import settings as djsettings
 from django.contrib.auth import get_user_model
@@ -39,7 +38,6 @@ def create_magiclink(
         token=get_random_string(length=settings.TOKEN_LENGTH),
         expiry=expiry,
         redirect_url=redirect_url,
-        cookie_value=str(uuid4()),
         ip_address=get_client_ip(request),
     )
     return magic_link
