@@ -80,9 +80,8 @@ class LoginForm(AntiSpam):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            if settings.REQUIRE_SIGNUP:
-                error = 'We could not find a user with that email address'
-                raise forms.ValidationError(error)
+            error = 'We could not find a user with that email address'
+            raise forms.ValidationError(error)
         else:
             is_active = getattr(user, 'is_active', True)
             if not settings.IGNORE_IS_ACTIVE_FLAG and not is_active:

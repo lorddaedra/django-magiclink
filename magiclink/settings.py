@@ -6,11 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 
 LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magiclink:login_sent')
 
-# If this setting is set to False a user account will be created the first time
-# a user requests a login link.
-REQUIRE_SIGNUP = getattr(settings, 'MAGICLINK_REQUIRE_SIGNUP', True)
-if not isinstance(REQUIRE_SIGNUP, bool):
-    raise ImproperlyConfigured('"MAGICLINK_REQUIRE_SIGNUP" must be a boolean')
 SIGNUP_LOGIN_REDIRECT = getattr(settings, 'MAGICLINK_SIGNUP_LOGIN_REDIRECT', '')
 
 try:

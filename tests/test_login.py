@@ -43,16 +43,6 @@ def test_login_page_get(client):
     assert response.status_code == 200
 
 
-def test_signup_require_signup_context(client):
-    from magiclink import settings as mlsettings
-
-    url = reverse('magiclink:login')
-    response = client.get(url)
-    assert response.context_data['require_signup'] == mlsettings.REQUIRE_SIGNUP
-    response = client.post(url)
-    assert response.context_data['require_signup'] == mlsettings.REQUIRE_SIGNUP
-
-
 @pytest.mark.django_db
 def test_login_post(mocker, client, user, settings):  # NOQA: F811
     from magiclink import settings as mlsettings
@@ -114,24 +104,6 @@ def test_login_email_ignore_case(settings, client, user):  # NOQA: F811
     assert magiclink
     assert response.status_code == 302
     assert response.url == reverse('magiclink:login_sent')
-
-
-@pytest.mark.django_db
-def test_login_post_no_user_require_signup_false(settings, client):
-    settings.MAGICLINK_REQUIRE_SIGNUP = False
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-
-    email = 'fake@example.com'
-    url = reverse('magiclink:login')
-    data = {'email': email}
-    response = client.post(url, data)
-    assert response.status_code == 302
-    assert response.url == reverse('magiclink:login_sent')
-    usr = User.objects.get(email=email)
-    assert usr
-    magiclink = MagicLink.objects.get(email=email)
-    assert magiclink
 
 
 @pytest.mark.django_db

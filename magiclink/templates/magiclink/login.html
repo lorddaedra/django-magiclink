@@ -21,9 +21,7 @@
     {{ login_form }}
     <button type="submit">Send login email</button>
   </form>
-  {% if require_signup %}
-    <p>Don't have an account? <a href="{% url 'magiclink:signup' %}">Sign up here</a></p>
-  {% endif %}
+  <p>Don't have an account? <a href="{% url 'magiclink:signup' %}">Sign up here</a></p>
 
   <p>Please see the <a href="https://github.com/pyepye/django-magiclink">README on Github</a> for more details on setting up django-magiclink correctly</p>
 </body>

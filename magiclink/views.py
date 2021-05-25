@@ -25,21 +25,17 @@ class Login(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['login_form'] = LoginForm()
-        context['require_signup'] = settings.REQUIRE_SIGNUP
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         logout(request)
         context = self.get_context_data(**kwargs)
-        context['require_signup'] = settings.REQUIRE_SIGNUP
         form = LoginForm(request.POST)
         if not form.is_valid():
             context['login_form'] = form
             return self.render_to_response(context)
 
         email = form.cleaned_data['email']
-        if not settings.REQUIRE_SIGNUP:
-            get_or_create_user(email)
 
         next_url = request.GET.get('next', '')
         try:

@@ -107,21 +107,6 @@ def test_email_ignore_case_bad_value(settings):
         reload(settings)
 
 
-def test_require_signup(settings):
-    settings.MAGICLINK_REQUIRE_SIGNUP = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.REQUIRE_SIGNUP == settings.MAGICLINK_REQUIRE_SIGNUP
-
-
-def test_require_signup_bad_value(settings):
-    settings.MAGICLINK_REQUIRE_SIGNUP = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_email_as_username(settings):
     settings.MAGICLINK_EMAIL_AS_USERNAME = True
     from magiclink import settings as mlsettings
