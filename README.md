@@ -76,8 +76,6 @@ Add the following settings to your `settings.py` (you will need to replace the t
 # Set Djangos login URL to the magiclink login page
 LOGIN_URL = 'magiclink:login'
 
-MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = 'magiclink/login_failed.html'
-
 # Optional:
 # If this setting is set to False a user account will be created the first
 # time a user requests a login link.
@@ -116,7 +114,7 @@ After the user has requested a magic link, they will be redirected to a success 
 
 #### Login failed page
 
-If the user tries to use an invalid magic token they will be shown a custom error page. To override the HTML for this page you can set the `MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME` setting. If you would like to return a 404 page you can set this setting to a empty string (or any falsy value).
+If the user tries to use an invalid magic token they will be shown a custom error page.
 
 The reasons for the login failing is passed through as the context variable `{{ login_error }}`
 
@@ -191,11 +189,6 @@ Below are the different settings that can be overridden. To do so place the sett
 *Note: Each of the url / redirect settings can either be a URL or url name*
 
 ```python
-
-# Override the template that shows when the user tries to login with a
-# magic link that is not valid. See 'Login failed page' in the Setup section
-MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = 'magiclink/login_failed.html'
-
 
 # If this setting is set to False a user account will be created the first time
 # a user requests a login link.

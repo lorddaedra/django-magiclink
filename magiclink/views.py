@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings as django_settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -61,35 +61,32 @@ class LoginSent(TemplateView):
 
 
 class LoginVerify(TemplateView):
-    template_name = settings.LOGIN_FAILED_TEMPLATE_NAME
+    template_name = 'magiclink/login_failed.html'
 
     def get(self, request, *args, **kwargs):
         token = request.GET.get('token')
         email = request.GET.get('email')
         user = authenticate(request, token=token, email=email)
         if not user:
-            if settings.LOGIN_FAILED_TEMPLATE_NAME:
-                context = self.get_context_data(**kwargs)
-                # The below settings are left in for backward compatibility
-                context['ONE_TOKEN_PER_USER'] = settings.ONE_TOKEN_PER_USER
-                context['ALLOW_SUPERUSER_LOGIN'] = settings.ALLOW_SUPERUSER_LOGIN  # NOQA: E501
-                context['ALLOW_STAFF_LOGIN'] = settings.ALLOW_STAFF_LOGIN
+            context = self.get_context_data(**kwargs)
+            # The below settings are left in for backward compatibility
+            context['ONE_TOKEN_PER_USER'] = settings.ONE_TOKEN_PER_USER
+            context['ALLOW_SUPERUSER_LOGIN'] = settings.ALLOW_SUPERUSER_LOGIN  # NOQA: E501
+            context['ALLOW_STAFF_LOGIN'] = settings.ALLOW_STAFF_LOGIN
 
-                try:
-                    magiclink = MagicLink.objects.get(token=token)
-                except MagicLink.DoesNotExist:
-                    error = 'A magic link with that token could not be found'
-                    context['login_error'] = error
-                    return self.render_to_response(context)
-
-                try:
-                    MagicLink.validate(magiclink, email)
-                except MagicLinkError as error:
-                    context['login_error'] = str(error)
-
+            try:
+                magiclink = MagicLink.objects.get(token=token)
+            except MagicLink.DoesNotExist:
+                error = 'A magic link with that token could not be found'
+                context['login_error'] = error
                 return self.render_to_response(context)
-            else:
-                raise Http404()
+
+            try:
+                MagicLink.validate(magiclink, email)
+            except MagicLinkError as error:
+                context['login_error'] = str(error)
+
+            return self.render_to_response(context)
 
         login(request, user)
         log.info(f'Login successful for {email}')

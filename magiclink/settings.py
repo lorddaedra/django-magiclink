@@ -6,8 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 
 LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magiclink:login_sent')
 
-LOGIN_FAILED_TEMPLATE_NAME = getattr(settings, 'MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME', 'magiclink/login_failed.html')
-
 # If this setting is set to False a user account will be created the first time
 # a user requests a login link.
 REQUIRE_SIGNUP = getattr(settings, 'MAGICLINK_REQUIRE_SIGNUP', True)

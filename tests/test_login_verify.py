@@ -52,19 +52,7 @@ def test_login_verify_with_redirect(client, settings, user, magic_link):  # NOQA
 
 
 @pytest.mark.django_db
-def test_login_verify_no_token_404(client, settings):
-    settings.MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = ''
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-
-    url = reverse('magiclink:login_verify')
-    response = client.get(url)
-    assert response.status_code == 404
-
-
-@pytest.mark.django_db
 def test_login_verify_failed(client, settings):
-    settings.MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = 'magiclink/login_failed.html'  # NOQA: E501
     from magiclink import settings as mlsettings
     reload(mlsettings)
 
