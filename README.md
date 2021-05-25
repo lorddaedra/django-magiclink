@@ -76,7 +76,6 @@ Add the following settings to your `settings.py` (you will need to replace the t
 # Set Djangos login URL to the magiclink login page
 LOGIN_URL = 'magiclink:login'
 
-MAGICLINK_LOGIN_TEMPLATE_NAME = 'magiclink/login.html'
 MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = 'magiclink/login_sent.html'
 MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME = 'magiclink/login_failed.html'
 
@@ -92,7 +91,7 @@ See [additional configuration settings](#configuration-settings) for all of the 
 
 #### Login page
 
-Each login page will need different HTML so you need to set the `MAGICLINK_LOGIN_TEMPLATE_NAME` setting to a template of your own. When overriding this template please ensure the following code is included:
+When overriding this template please ensure the following code is included:
 
 ```html
 <form action="{% url 'magiclink:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post">
@@ -193,9 +192,6 @@ Below are the different settings that can be overridden. To do so place the sett
 *Note: Each of the url / redirect settings can either be a URL or url name*
 
 ```python
-
-# Override the login page template. See 'Login page' in the Setup section
-MAGICLINK_LOGIN_TEMPLATE_NAME = 'myapp/login.html'
 
 # Override the login page template. See 'Login sent page' in the Setup section
 MAGICLINK_LOGIN_SENT_TEMPLATE_NAME = 'myapp/login_sent.html'

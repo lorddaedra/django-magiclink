@@ -6,7 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 
 LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magiclink:login_sent')
 
-LOGIN_TEMPLATE_NAME = getattr(settings, 'MAGICLINK_LOGIN_TEMPLATE_NAME', 'magiclink/login.html')
 LOGIN_SENT_TEMPLATE_NAME = getattr(settings, 'MAGICLINK_LOGIN_SENT_TEMPLATE_NAME', 'magiclink/login_sent.html')
 LOGIN_FAILED_TEMPLATE_NAME = getattr(settings, 'MAGICLINK_LOGIN_FAILED_TEMPLATE_NAME', 'magiclink/login_failed.html')
 

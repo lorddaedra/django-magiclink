@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 class Login(TemplateView):
-    template_name = settings.LOGIN_TEMPLATE_NAME
+    template_name = 'magiclink/login.html'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
