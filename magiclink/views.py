@@ -7,10 +7,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from . import settings
-from .forms import (
-    LoginForm, SignupForm, SignupFormEmailOnly, SignupFormFull,
-    SignupFormWithUsername
-)
+from .forms import LoginForm, SignupForm
 from .helpers import create_magiclink, get_or_create_user
 from .models import MagicLink, MagicLinkError
 from .utils import get_url_path
@@ -93,30 +90,21 @@ class LoginVerify(TemplateView):
 
 
 class Signup(TemplateView):
+    form = SignupForm
     template_name = 'magiclink/signup.html'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        context['SignupForm'] = SignupForm()
-        context['SignupFormEmailOnly'] = SignupFormEmailOnly()
-        context['SignupFormWithUsername'] = SignupFormWithUsername()
-        context['SignupFormFull'] = SignupFormFull()
+        context['signup_form'] = self.form()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         logout(request)
         context = self.get_context_data(**kwargs)
-        form_name = request.POST.get('form_name')
-        from_list = [
-            'SignupForm, SignupFormEmailOnly', 'SignupFormWithUsername',
-            'SignupFormFull',
-        ]
-        forms = __import__('magiclink.forms', fromlist=from_list)
-        SignupForm = getattr(forms, form_name)
 
-        form = SignupForm(request.POST)
+        form = self.form(request.POST)
         if not form.is_valid():
-            context[form_name] = form
+            context['signup_form'] = form
             return self.render_to_response(context)
 
         email = form.cleaned_data['email']

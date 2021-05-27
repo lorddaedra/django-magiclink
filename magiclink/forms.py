@@ -90,13 +90,8 @@ class LoginForm(AntiSpam):
         return email
 
 
-class SignupFormEmailOnly(AntiSpam):
-    form_name = forms.CharField(
-        initial='SignupFormEmailOnly', widget=forms.HiddenInput()
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'})
-    )
+class SignupForm(AntiSpam):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
 
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
@@ -114,39 +109,3 @@ class SignupFormEmailOnly(AntiSpam):
             if not settings.IGNORE_IS_ACTIVE_FLAG and not is_active:
                 error = 'This user has been deactivated'
             raise forms.ValidationError(error)
-
-
-class SignupForm(SignupFormEmailOnly):
-    form_name = forms.CharField(
-        initial='SignupForm', widget=forms.HiddenInput()
-    )
-    name = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Enter your name'})
-    )
-    field_order = ['form_name', 'name', 'email']
-
-
-class SignupFormWithUsername(SignupFormEmailOnly):
-    form_name = forms.CharField(
-        initial='SignupFormWithUsername', widget=forms.HiddenInput()
-    )
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Enter your username'})
-    )
-    field_order = ['form_name', 'username', 'email']
-
-    def clean_username(self) -> str:
-        username = self.cleaned_data['username']
-        users = User.objects.filter(username=username)
-        if users:
-            raise forms.ValidationError(
-                'username is already linked to an account'
-            )
-        return username
-
-
-class SignupFormFull(SignupForm, SignupFormWithUsername):
-    form_name = forms.CharField(
-        initial='SignupFormFull', widget=forms.HiddenInput()
-    )
-    field_order = ['form_name', 'username', 'name', 'email']

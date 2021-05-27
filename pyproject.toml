@@ -28,7 +28,7 @@ pytest-mock = "^3.2.0"
 pytest-freezegun = "^0.4.1"
 
 [tool.isort]
-line_length = 79
+line_length = 160
 multi_line_output = 5
 known_third_party = "pytest"
 known_first_party = "magiclink"

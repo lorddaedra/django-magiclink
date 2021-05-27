@@ -160,18 +160,11 @@ When overriding this template please ensure the following content is included:
 ```html
 <form action="{% url 'magiclink:signup' %}" method="post">
     {% csrf_token %}
-    {{ SignupForm }}
+    {{ signup_form }}
     <button type='submit'>Signup</button>
 </form>
 <p>Already have an account? <a href='{% url 'magiclink:login' %}'>Log in here</a></p>
 ```
-
-There are several forms made avalible in the context on this page depending on what information you want to collect:
-* **SignupFormEmailOnly** - Only includes an `email` field
-* **SignupForm** - Includes `name` and `email` fields
-* **SignupFormWithUsername** - Includes `username` and `email` fields
-* **SignupFormFull** - Includes `username`, `name` and `email` fields
-
 
 Like the login for the sign up flow can be overridden if you require more information from the user on signup. See the login/setup docs for more details.
 
