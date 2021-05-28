@@ -115,8 +115,6 @@ The reasons for the login failing is passed through as the context variable `{{ 
 To help tailor the error page and explain the possible reasons the user could not login the following context variables are provided:
 
 * `{{ login_error }}` - The reason the login failed (raised by `MagicLink.validate()`)
-* `{{ allow_superuser_login }}` - The value of the `MAGICLINK_ALLOW_SUPERUSER_LOGIN` setting
-* `{{ allow_staff_login }}` - The value of the `MAGICLINK_ALLOW_STAFF_LOGIN` setting
 
 
 For an example of this page see the [default login failed template](https://github.com/pyepye/django-magiclink/blob/master/magiclink/templates/magiclink/login_failed.html)
@@ -213,12 +211,6 @@ MAGICLINK_IGNORE_EMAIL_CASE = True
 # When creating a user assign their email as the username (if the User model
 # has a username field)
 MAGICLINK_EMAIL_AS_USERNAME = True
-
-# Allow superusers to login via a magic link
-MAGICLINK_ALLOW_SUPERUSER_LOGIN = True
-
-# Allow staff users to login via a magic link
-MAGICLINK_ALLOW_STAFF_LOGIN = True
 
 # Ignore the Django user model's is_active flag for login requests
 MAGICLINK_IGNORE_IS_ACTIVE_FLAG = True

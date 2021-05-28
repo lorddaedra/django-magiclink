@@ -122,36 +122,6 @@ def test_email_as_username_bad_value(settings):
         reload(settings)
 
 
-def test_allow_superuser_login(settings):
-    settings.MAGICLINK_ALLOW_SUPERUSER_LOGIN = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.ALLOW_SUPERUSER_LOGIN == settings.MAGICLINK_ALLOW_SUPERUSER_LOGIN  # NOQA: E501
-
-
-def test_allow_superuser_login_bad_value(settings):
-    settings.MAGICLINK_ALLOW_SUPERUSER_LOGIN = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
-def test_allow_staff_login(settings):
-    settings.MAGICLINK_ALLOW_STAFF_LOGIN = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.ALLOW_STAFF_LOGIN == settings.MAGICLINK_ALLOW_STAFF_LOGIN
-
-
-def test_allow_staff_login_bad_value(settings):
-    settings.MAGICLINK_ALLOW_STAFF_LOGIN = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_ignore_active_flag_bad_value(settings):
     settings.MAGICLINK_IGNORE_IS_ACTIVE_FLAG = 'Test'
 

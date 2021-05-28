@@ -1,5 +1,4 @@
 from datetime import timedelta
-from importlib import reload
 from urllib.parse import quote
 
 import pytest
@@ -129,44 +128,4 @@ def test_validate_used_times(user, magic_link):  # NOQA: F811
 
     ml = MagicLink.objects.get(token=ml.token)
     assert ml.times_used == settings.TOKEN_USES + 1
-    assert ml.disabled is True
-
-
-@pytest.mark.django_db
-def test_validate_superuser(settings, user, magic_link):  # NOQA: F811
-    settings.MAGICLINK_ALLOW_SUPERUSER_LOGIN = False
-    from magiclink import settings
-    reload(settings)
-
-    request = HttpRequest()
-    ml = magic_link(request)
-    user.is_superuser = True
-    user.save()
-    with pytest.raises(MagicLinkError) as error:
-        MagicLink.validate(ml, email=user.email)
-
-    error.match('You can not login to a super user account using a magic link')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
-    assert ml.disabled is True
-
-
-@pytest.mark.django_db
-def test_validate_staff(settings, user, magic_link):  # NOQA: F811
-    settings.MAGICLINK_ALLOW_STAFF_LOGIN = False
-    from magiclink import settings
-    reload(settings)
-
-    request = HttpRequest()
-    ml = magic_link(request)
-    user.is_staff = True
-    user.save()
-    with pytest.raises(MagicLinkError) as error:
-        MagicLink.validate(ml, email=user.email)
-
-    error.match('You can not login to a staff account using a magic link')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
     assert ml.disabled is True

@@ -62,9 +62,6 @@ class LoginVerify(TemplateView):
         user = authenticate(request, token=token, email=email)
         if not user:
             context = self.get_context_data(**kwargs)
-            # The below settings are left in for backward compatibility
-            context['ALLOW_SUPERUSER_LOGIN'] = settings.ALLOW_SUPERUSER_LOGIN  # NOQA: E501
-            context['ALLOW_STAFF_LOGIN'] = settings.ALLOW_STAFF_LOGIN
 
             try:
                 magiclink = MagicLink.objects.get(token=token)

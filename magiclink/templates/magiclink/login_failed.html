@@ -19,9 +19,6 @@
     <li>The magic link you tried to use has expired</li>
     <li>You have already used this magic link to login before</li>
     <li>You have requested another magic causing this magic link to become invalid</li>
-    {% if not ALLOW_SUPERUSER_LOGIN or not ALLOW_STAFF_LOGIN %}
-    <li>You are a superuser or staff user</li>
-    {% endif %}
   </ul>
 
   <p>Please see the <a href="https://github.com/pyepye/django-magiclink">README on Github</a> for more details on setting up django-magiclink correctly</p>

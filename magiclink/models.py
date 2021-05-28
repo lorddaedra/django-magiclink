@@ -98,14 +98,4 @@ class MagicLink(models.Model):
 
         user = User.objects.get(email=ml.email)
 
-        if not settings.ALLOW_SUPERUSER_LOGIN and user.is_superuser:
-            ml.disable()
-            raise MagicLinkError(
-                'You can not login to a super user account using a magic link')
-
-        if not settings.ALLOW_STAFF_LOGIN and user.is_staff:
-            ml.disable()
-            raise MagicLinkError(
-                'You can not login to a staff account using a magic link')
-
         return user

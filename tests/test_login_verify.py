@@ -61,5 +61,3 @@ def test_login_verify_failed(client, settings):
     assert response.status_code == 200
     context = response.context_data
     assert context['login_error'] == 'A magic link with that token could not be found'  # NOQA: E501
-    assert context['ALLOW_SUPERUSER_LOGIN'] == mlsettings.ALLOW_SUPERUSER_LOGIN
-    assert context['ALLOW_STAFF_LOGIN'] == mlsettings.ALLOW_STAFF_LOGIN

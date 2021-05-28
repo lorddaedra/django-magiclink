@@ -37,14 +37,6 @@ EMAIL_AS_USERNAME = getattr(settings, 'MAGICLINK_EMAIL_AS_USERNAME', True)
 if not isinstance(EMAIL_AS_USERNAME, bool):
     raise ImproperlyConfigured('"MAGICLINK_EMAIL_AS_USERNAME" must be a boolean')
 
-ALLOW_SUPERUSER_LOGIN = getattr(settings, 'MAGICLINK_ALLOW_SUPERUSER_LOGIN', True)
-if not isinstance(ALLOW_SUPERUSER_LOGIN, bool):
-    raise ImproperlyConfigured('"MAGICLINK_ALLOW_SUPERUSER_LOGIN" must be a boolean')
-
-ALLOW_STAFF_LOGIN = getattr(settings, 'MAGICLINK_ALLOW_STAFF_LOGIN', True)
-if not isinstance(ALLOW_STAFF_LOGIN, bool):
-    raise ImproperlyConfigured('"MAGICLINK_ALLOW_STAFF_LOGIN" must be a boolean')
-
 IGNORE_IS_ACTIVE_FLAG = getattr(settings, 'MAGICLINK_IGNORE_IS_ACTIVE_FLAG', False)
 if not isinstance(IGNORE_IS_ACTIVE_FLAG, bool):
     raise ImproperlyConfigured('"MAGICLINK_IGNORE_IS_ACTIVE_FLAG" must be a boolean')
