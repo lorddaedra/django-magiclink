@@ -13,7 +13,7 @@ homepage = "https://github.com/pyepye/django-magiclink"
 keywords = ["magic link", "authentication", "passwordless"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.9"
 Django = ">=2.2"
 
 [tool.poetry.dev-dependencies]
