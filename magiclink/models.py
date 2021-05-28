@@ -1,3 +1,4 @@
+from typing import Optional
 from urllib.parse import urlencode, urljoin
 
 from django.conf import settings as djsettings
@@ -33,23 +34,26 @@ class MagicLink(models.Model):
     def __str__(self):
         return f'{self.email} - {self.expiry}'
 
-    def used(self) -> None:
-        self.times_used += 1
-        if self.times_used >= settings.TOKEN_USES:
-            self.disabled = True
-        self.save()
+    @staticmethod
+    def used(ml: 'MagicLink') -> None:
+        ml.times_used += 1
+        if ml.times_used >= settings.TOKEN_USES:
+            ml.disabled = True
+        ml.save()
 
-    def disable(self) -> None:
-        self.times_used += 1
-        self.disabled = True
-        self.save()
+    @staticmethod
+    def disable(ml: 'MagicLink') -> None:
+        ml.times_used += 1
+        ml.disabled = True
+        ml.save()
 
-    def generate_url(self, request: HttpRequest) -> str:
+    @staticmethod
+    def generate_url(token: str, email: str, request: HttpRequest) -> str:
         url_path = reverse("magiclink:login_verify")
 
-        params = {'token': self.token}
+        params = {'token': token}
         if settings.VERIFY_INCLUDE_EMAIL:
-            params['email'] = self.email
+            params['email'] = email
         query = urlencode(params)
 
         url_path = f'{url_path}?{query}'
@@ -58,17 +62,24 @@ class MagicLink(models.Model):
         url = urljoin(f'{scheme}://{domain}', url_path)
         return url
 
-    def send(self, request: HttpRequest) -> None:
-        user = User.objects.get(email=self.email)
+    @staticmethod
+    def send(ml: 'MagicLink', request: HttpRequest, style: Optional[dict[str, str]] = None) -> None:
+        user = User.objects.get(email=ml.email)
         context = {
             'subject': settings.EMAIL_SUBJECT,
             'user': user,
-            'magiclink': self.generate_url(request),
-            'expiry': self.expiry,
-            'ip_address': self.ip_address,
-            'created': self.created,
+            'magiclink': MagicLink.generate_url(token=ml.token, email=ml.email, request=request),
+            'expiry': ml.expiry,
+            'ip_address': ml.ip_address,
+            'created': ml.created,
             'token_uses': settings.TOKEN_USES,
-            'style': settings.EMAIL_STYLES,
+            'style': style if style else {
+                'logo_url': '',
+                'background_color': '#ffffff',
+                'main_text_color': '#000000',
+                'button_background_color': '#0078be',
+                'button_text_color': '#ffffff',
+            },
         }
         plain = render_to_string(settings.EMAIL_TEMPLATE_NAME_TEXT, context)
         html = render_to_string(settings.EMAIL_TEMPLATE_NAME_HTML, context)
@@ -89,11 +100,11 @@ class MagicLink(models.Model):
             raise MagicLinkError('Email address does not match')
 
         if timezone.now() > ml.expiry:
-            ml.disable()
+            MagicLink.disable(ml)
             raise MagicLinkError('Magic link has expired')
 
         if ml.times_used >= settings.TOKEN_USES:
-            ml.disable()
+            MagicLink.disable(ml)
             raise MagicLinkError('Magic link has been used too many times')
 
         user = User.objects.get(email=ml.email)

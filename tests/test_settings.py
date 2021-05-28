@@ -160,27 +160,6 @@ def test_token_request_time_limit_bad_value(settings):
         reload(settings)
 
 
-def test_email_styles(settings):
-    settings.MAGICLINK_EMAIL_STYLES = {
-        'logo_url': '',
-        'background_color': '#ffffff',
-        'main_text_color': '#000000',
-        'button_background_color': '#0078be',
-        'button_text_color': '#ffffff',
-    }
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_STYLES == settings.MAGICLINK_EMAIL_STYLES
-
-
-def test_email_styles_bad_value(settings):
-    settings.MAGICLINK_EMAIL_STYLES = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_antispam_forms(settings):
     settings.MAGICLINK_ANTISPAM_FORMS = True
     from magiclink import settings as mlsettings

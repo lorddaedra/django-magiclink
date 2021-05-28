@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.urls import reverse
 
+from magiclink.models import MagicLink
+
 from .fixtures import magic_link, user  # NOQA: F401
 
 User = get_user_model()
@@ -44,7 +46,7 @@ def test_login_verify_with_redirect(client, settings, user, magic_link):  # NOQA
     redirect_url = reverse('no_login')
     ml.redirect_url = redirect_url
     ml.save()
-    url = ml.generate_url(request)
+    url = MagicLink.generate_url(token=ml.token, email=ml.email, request=request)
 
     response = client.get(url)
     assert response.status_code == 302

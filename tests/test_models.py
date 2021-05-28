@@ -31,7 +31,7 @@ def test_generate_url(magic_link):  # NOQA: F811
     request.META['SERVER_PORT'] = 80
     ml = magic_link(request)
     url = f'http://{host}{login_url}?token={ml.token}&email={quote(ml.email)}'
-    assert ml.generate_url(request) == url
+    assert MagicLink.generate_url(token=ml.token, email=ml.email, request=request) == url
 
 
 @pytest.mark.django_db
@@ -45,18 +45,25 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
     request.META['SERVER_PORT'] = 80
 
     ml = magic_link(request)
-    ml.send(request)
+    style: dict[str, str] = {
+        'logo_url': '',
+        'background_color': '#ffffff',
+        'main_text_color': '#000000',
+        'button_background_color': '#0078be',
+        'button_text_color': '#ffffff',
+    }
+    MagicLink.send(ml, request, style=style)
 
     usr = User.objects.get(email=ml.email)
     context = {
         'subject': mlsettings.EMAIL_SUBJECT,
         'user': usr,
-        'magiclink': ml.generate_url(request),
+        'magiclink': MagicLink.generate_url(token=ml.token, email=ml.email, request=request),
         'expiry': ml.expiry,
         'ip_address': ml.ip_address,
         'created': ml.created,
         'token_uses': mlsettings.TOKEN_USES,
-        'style': mlsettings.EMAIL_STYLES,
+        'style': style,
     }
     render_to_string.assert_has_calls([
         mocker.call(mlsettings.EMAIL_TEMPLATE_NAME_TEXT, context),

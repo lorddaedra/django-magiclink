@@ -122,20 +122,7 @@ For an example of this page see the [default login failed template](https://gith
 
 #### Magic link email
 
-The login email which includes the magic link needs to be configured. By default, a simple HTML template is used which can be adapted to your own branding using the `MAGICLINK_EMAIL_STYLES` setting, or you can override the template (see below)
-
-This `MAGICLINK_EMAIL_STYLES` setting should be a dict with the following key values:
-
-```python
-MAGICLINK_EMAIL_STYLES = {
-    'logo_url': 'https://example.com/logo.png',
-    'background-colour': '#ffffff',
-    'main-text-color': '#000000',
-    'button-background-color': '#0078be',
-    'button-text-color': '#ffffff',
-}
-```
-*Note: The logo URL must be a full URL. For email client support you should use either a jpeg or png.*
+The login email which includes the magic link needs to be configured. By default, a simple HTML template is used. You can override the template (see below)
 
 If this email template is not to your liking you can override the email templates (one for text and one for html). To do so you need to override the `MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT` and `MAGICLINK_EMAIL_TEMPLATE_NAME_HTML` settings.  If you override these templates the following context variables are available:
 
@@ -185,16 +172,6 @@ MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
 
 # Change the url a user is redirect to after requesting a magic link
 MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
-
-# Ensure the branding of the login email is correct. This setting is not needed
-# if you override the `login_email.html` template
-MAGICLINK_EMAIL_STYLES = {
-    'logo_url': '',
-    'background-colour': '#ffffff',
-    'main-text-color': '#000000',
-    'button-background-color': '#0078be',
-    'button-text-color': '#ffffff',
-}
 
 # If you want to use your own email templates you can override the text and
 # html templates used with:
@@ -262,14 +239,15 @@ django-magiclink uses a model to help create, send and validate magic links. A `
 
 ```python
 from magiclink.helpers import create_magiclink
+from magiclink.models import MagicLink
 
 # Returns newly created from magiclink.models.MagicLink instance
 magiclink = create_magiclink(email, request, redirect_url='')
 
 # Generates the magic link url and sends it in an email
-magiclink.send(request)
+MagicLink.send(magiclink, request)
 
 # If you want to build the magic link from the model instance but don't want to
 #  send the email you can you can use:
-magic_link_url = magiclink.generate_url(request)
+magic_link_url = MagicLink.generate_url(token=magiclink.token, email=magiclink.email, request=request)
 ```

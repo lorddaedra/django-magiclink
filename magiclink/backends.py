@@ -44,7 +44,7 @@ class MagicLinkBackend():
             log.warning(error)
             return
 
-        magiclink.used()
+        MagicLink.used(magiclink)
         log.info(f'{user} authenticated via MagicLink')
         return user
 

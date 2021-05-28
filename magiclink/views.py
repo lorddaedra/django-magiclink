@@ -17,7 +17,14 @@ log = logging.getLogger(__name__)
 
 
 class Login(TemplateView):
-    template_name = 'magiclink/login.html'
+    template_name: str = 'magiclink/login.html'
+    style: dict[str, str] = {
+        'logo_url': '',
+        'background_color': '#ffffff',
+        'main_text_color': '#000000',
+        'button_background_color': '#0078be',
+        'button_text_color': '#ffffff',
+    }
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -42,7 +49,7 @@ class Login(TemplateView):
             context['login_form'] = form
             return self.render_to_response(context)
 
-        magiclink.send(request)
+        MagicLink.send(magiclink, request, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
@@ -50,11 +57,11 @@ class Login(TemplateView):
 
 
 class LoginSent(TemplateView):
-    template_name = 'magiclink/login_sent.html'
+    template_name: str = 'magiclink/login_sent.html'
 
 
 class LoginVerify(TemplateView):
-    template_name = 'magiclink/login_failed.html'
+    template_name: str = 'magiclink/login_failed.html'
 
     def get(self, request, *args, **kwargs):
         token = request.GET.get('token')
@@ -87,7 +94,14 @@ class LoginVerify(TemplateView):
 
 class Signup(TemplateView):
     form = SignupForm
-    template_name = 'magiclink/signup.html'
+    template_name: str = 'magiclink/signup.html'
+    style: dict[str, str] = {
+        'logo_url': '',
+        'background_color': '#ffffff',
+        'main_text_color': '#000000',
+        'button_background_color': '#0078be',
+        'button_text_color': '#ffffff',
+    }
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -120,7 +134,7 @@ class Signup(TemplateView):
         default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
         next_url = request.GET.get('next', default_signup_redirect)
         magiclink = create_magiclink(email, request, redirect_url=next_url)
-        magiclink.send(request)
+        MagicLink.send(magiclink, request, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
