@@ -63,7 +63,6 @@ class LoginVerify(TemplateView):
         if not user:
             context = self.get_context_data(**kwargs)
             # The below settings are left in for backward compatibility
-            context['ONE_TOKEN_PER_USER'] = settings.ONE_TOKEN_PER_USER
             context['ALLOW_SUPERUSER_LOGIN'] = settings.ALLOW_SUPERUSER_LOGIN  # NOQA: E501
             context['ALLOW_STAFF_LOGIN'] = settings.ALLOW_STAFF_LOGIN
 

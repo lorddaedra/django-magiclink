@@ -53,10 +53,6 @@ VERIFY_INCLUDE_EMAIL = getattr(settings, 'MAGICLINK_VERIFY_INCLUDE_EMAIL', True)
 if not isinstance(VERIFY_INCLUDE_EMAIL, bool):
     raise ImproperlyConfigured('"MAGICLINK_VERIFY_INCLUDE_EMAIL" must be a boolean')
 
-ONE_TOKEN_PER_USER = getattr(settings, 'MAGICLINK_ONE_TOKEN_PER_USER', True)
-if not isinstance(ONE_TOKEN_PER_USER, bool):
-    raise ImproperlyConfigured('"MAGICLINK_ONE_TOKEN_PER_USER" must be a boolean')
-
 try:
     # In seconds
     LOGIN_REQUEST_TIME_LIMIT = int(getattr(settings, 'MAGICLINK_LOGIN_REQUEST_TIME_LIMIT', 30))

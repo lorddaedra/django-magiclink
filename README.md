@@ -115,7 +115,6 @@ The reasons for the login failing is passed through as the context variable `{{ 
 To help tailor the error page and explain the possible reasons the user could not login the following context variables are provided:
 
 * `{{ login_error }}` - The reason the login failed (raised by `MagicLink.validate()`)
-* `{{ one_token_per_user }}` - The value of the `MAGICLINK_ONE_TOKEN_PER_USER` setting
 * `{{ allow_superuser_login }}` - The value of the `MAGICLINK_ALLOW_SUPERUSER_LOGIN` setting
 * `{{ allow_staff_login }}` - The value of the `MAGICLINK_ALLOW_STAFF_LOGIN` setting
 
@@ -238,9 +237,6 @@ MAGICLINK_TOKEN_USES = 1
 
 # How often a user can request a new login token (basic rate limiting).
 MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = 30  # In seconds
-
-# Disable all other tokens for a user when a new token is requested
-MAGICLINK_ONE_TOKEN_PER_USER = True
 
 # Include basic anti spam form fields to help stop bots. False by default
 # Note: IF you use the default forms you will need to add CSS to your
