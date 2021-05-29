@@ -53,9 +53,7 @@ class MagicLink(models.Model):
     def generate_url(token: str, email: str, request: HttpRequest) -> str:
         url_path = reverse("magiclink:login_verify")
 
-        params = {'token': token}
-        if settings.VERIFY_INCLUDE_EMAIL:
-            params['email'] = email
+        params = {'token': token, 'email': email}
         query = urlencode(params)
 
         url_path = f'{url_path}?{query}'
@@ -98,7 +96,7 @@ class MagicLink(models.Model):
         if email:
             email = email.lower()
 
-        if settings.VERIFY_INCLUDE_EMAIL and ml.email != email:
+        if ml.email != email:
             raise MagicLinkError('Email address does not match')
 
         if timezone.now() > ml.expiry:

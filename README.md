@@ -189,10 +189,6 @@ MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 # are much more susceptible to brute force attacks*
 MAGICLINK_TOKEN_LENGTH = 50
 
-# Require the user email to be included in the verification link
-# Warning: If this is set to false tokens are more vulnerable to brute force
-MAGICLINK_VERIFY_INCLUDE_EMAIL = True
-
 # The number of times a login token can be used before being disabled
 MAGICLINK_TOKEN_USES = 1
 

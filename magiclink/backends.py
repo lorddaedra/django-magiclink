@@ -24,7 +24,7 @@ class MagicLinkBackend():
             log.warning('Token missing from authentication')
             return
 
-        if settings.VERIFY_INCLUDE_EMAIL and not email:
+        if not email:
             log.warning('Email address not supplied with token')
             return
 

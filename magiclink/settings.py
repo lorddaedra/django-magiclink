@@ -31,10 +31,6 @@ try:
 except ValueError:
     raise ImproperlyConfigured('"MAGICLINK_TOKEN_USES" must be an integer')
 
-VERIFY_INCLUDE_EMAIL = getattr(settings, 'MAGICLINK_VERIFY_INCLUDE_EMAIL', True)
-if not isinstance(VERIFY_INCLUDE_EMAIL, bool):
-    raise ImproperlyConfigured('"MAGICLINK_VERIFY_INCLUDE_EMAIL" must be a boolean')
-
 try:
     # In seconds
     LOGIN_REQUEST_TIME_LIMIT = int(getattr(settings, 'MAGICLINK_LOGIN_REQUEST_TIME_LIMIT', 30))

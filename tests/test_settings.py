@@ -94,21 +94,6 @@ def test_token_uses_bad_value(settings):
         reload(settings)
 
 
-def test_verify_include_email(settings):
-    settings.MAGICLINK_VERIFY_INCLUDE_EMAIL = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.VERIFY_INCLUDE_EMAIL == settings.MAGICLINK_VERIFY_INCLUDE_EMAIL  # NOQA: E501
-
-
-def test_verify_include_email_bad_value(settings):
-    settings.MAGICLINK_VERIFY_INCLUDE_EMAIL = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_token_request_time_limit(settings):
     settings.MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = True
     from magiclink import settings as mlsettings
