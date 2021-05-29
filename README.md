@@ -132,7 +132,6 @@ If this email template is not to your liking you can override the email template
 * `{{ expiry }}` - Datetime for when the magiclink expires
 * `{{ ip_address }}` - The IP address of the person who requested the magic link
 * `{{ created }}` - Datetime of when the magic link was created
-* `{{ token_uses }}` - The value of `MAGICLINK_TOKEN_USES`
 
 
 #### Signup page
@@ -189,9 +188,6 @@ MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 # are much more susceptible to brute force attacks*
 MAGICLINK_TOKEN_LENGTH = 50
 
-# The number of times a login token can be used before being disabled
-MAGICLINK_TOKEN_USES = 1
-
 # How often a user can request a new login token (basic rate limiting).
 MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = 30  # In seconds
 
@@ -231,7 +227,7 @@ from magiclink.services import create_magiclink
 from magiclink.models import MagicLink
 
 # Returns newly created from magiclink.models.MagicLink instance
-magiclink = create_magiclink(email, request, redirect_url='')
+magiclink = create_magiclink(email=email, request=request, redirect_url='')
 
 # Generates the magic link url and sends it in an email
 MagicLink.send(magiclink, request)

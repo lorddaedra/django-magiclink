@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from django.conf import settings as django_settings
@@ -9,7 +11,7 @@ from django.views.generic.base import RedirectView
 from . import settings
 from .forms import LoginForm, SignupForm
 from .models import MagicLink, MagicLinkError
-from .services import create_magiclink, create_user
+from .services import create_magiclink, create_user, validate
 from .utils import get_url_path
 
 User = get_user_model()
@@ -43,7 +45,7 @@ class Login(TemplateView):
 
         next_url = request.GET.get('next', '')
         try:
-            magiclink = create_magiclink(email, request, redirect_url=next_url)
+            magiclink = create_magiclink(email=email, request=request, redirect_url=next_url)
         except MagicLinkError as e:
             form.add_error('email', str(e))
             context['login_form'] = form
@@ -78,7 +80,7 @@ class LoginVerify(TemplateView):
                 return self.render_to_response(context)
 
             try:
-                MagicLink.validate(magiclink, email)
+                validate(ml=magiclink, email=email)
             except MagicLinkError as error:
                 context['login_error'] = str(error)
 
@@ -122,7 +124,7 @@ class Signup(TemplateView):
         create_user(email=email)
         default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
         next_url = request.GET.get('next', default_signup_redirect)
-        magiclink = create_magiclink(email, request, redirect_url=next_url)
+        magiclink = create_magiclink(email=email, request=request, redirect_url=next_url)
         MagicLink.send(magiclink, request, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)

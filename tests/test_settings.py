@@ -79,21 +79,6 @@ def test_auth_timeout_bad_value(settings):
         reload(settings)
 
 
-def test_token_uses(settings):
-    settings.MAGICLINK_TOKEN_USES = 100
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.TOKEN_USES == settings.MAGICLINK_TOKEN_USES
-
-
-def test_token_uses_bad_value(settings):
-    settings.MAGICLINK_TOKEN_USES = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_token_request_time_limit(settings):
     settings.MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = True
     from magiclink import settings as mlsettings

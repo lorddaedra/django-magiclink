@@ -5,14 +5,12 @@ from urllib.parse import urlencode, urljoin
 
 from django.conf import settings as djsettings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.db import models
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
 
 from . import settings
 
@@ -29,25 +27,11 @@ class MagicLink(models.Model):
     expiry = models.DateTimeField()
     redirect_url = models.TextField()
     disabled = models.BooleanField(default=False)
-    times_used = models.IntegerField(default=0)
     ip_address = models.GenericIPAddressField(null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.email} - {self.expiry}'
-
-    @staticmethod
-    def used(ml: 'MagicLink') -> None:
-        ml.times_used += 1
-        if ml.times_used >= settings.TOKEN_USES:
-            ml.disabled = True
-        ml.save()
-
-    @staticmethod
-    def disable(ml: 'MagicLink') -> None:
-        ml.times_used += 1
-        ml.disabled = True
-        ml.save()
 
     @staticmethod
     def generate_url(token: str, email: str, request: HttpRequest) -> str:
@@ -72,7 +56,6 @@ class MagicLink(models.Model):
             'expiry': ml.expiry,
             'ip_address': ml.ip_address,
             'created': ml.created,
-            'token_uses': settings.TOKEN_USES,
             'style': style if style else {
                 'logo_url': '',
                 'background_color': '#ffffff',
@@ -90,23 +73,3 @@ class MagicLink(models.Model):
             from_email=djsettings.DEFAULT_FROM_EMAIL,
             html_message=html,
         )
-
-    @staticmethod
-    def validate(ml: 'MagicLink', email: str = '') -> AbstractUser:
-        if email:
-            email = email.lower()
-
-        if ml.email != email:
-            raise MagicLinkError('Email address does not match')
-
-        if timezone.now() > ml.expiry:
-            MagicLink.disable(ml)
-            raise MagicLinkError('Magic link has expired')
-
-        if ml.times_used >= settings.TOKEN_USES:
-            MagicLink.disable(ml)
-            raise MagicLinkError('Magic link has been used too many times')
-
-        user = User.objects.get(email=ml.email)
-
-        return user

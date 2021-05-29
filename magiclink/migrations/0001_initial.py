@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
                 ('expiry', models.DateTimeField()),
                 ('redirect_url', models.TextField()),
                 ('disabled', models.BooleanField(default=False)),
-                ('times_used', models.IntegerField(default=0)),
                 ('ip_address', models.GenericIPAddressField(null=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
             ],

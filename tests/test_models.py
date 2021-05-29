@@ -1,14 +1,13 @@
-from datetime import timedelta
+from __future__ import annotations
+
 from urllib.parse import quote
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils import timezone
 
-from magiclink import settings
-from magiclink.models import MagicLink, MagicLinkError
+from magiclink.models import MagicLink
 
 from .fixtures import magic_link, user  # NOQA: F401
 
@@ -62,7 +61,6 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
         'expiry': ml.expiry,
         'ip_address': ml.ip_address,
         'created': ml.created,
-        'token_uses': mlsettings.TOKEN_USES,
         'style': style,
     }
     render_to_string.assert_has_calls([
@@ -76,63 +74,3 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
         from_email=settings.DEFAULT_FROM_EMAIL,
         html_message=mocker.ANY,
     )
-
-
-@pytest.mark.django_db
-def test_validate(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    ml_user = MagicLink.validate(ml, email=user.email)
-    assert ml_user == user
-
-
-@pytest.mark.django_db
-def test_validate_email_ignore_case(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    ml_user = MagicLink.validate(ml, email=user.email.upper())
-    assert ml_user == user
-
-
-@pytest.mark.django_db
-def test_validate_wrong_email(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    email = 'fake@email.com'
-    with pytest.raises(MagicLinkError) as error:
-        MagicLink.validate(ml, email=email)
-
-    error.match('Email address does not match')
-
-
-@pytest.mark.django_db
-def test_validate_expired(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    ml.expiry = timezone.now() - timedelta(seconds=1)
-    ml.save()
-
-    with pytest.raises(MagicLinkError) as error:
-        MagicLink.validate(ml, email=user.email)
-
-    error.match('Magic link has expired')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
-    assert ml.disabled is True
-
-
-@pytest.mark.django_db
-def test_validate_used_times(user, magic_link):  # NOQA: F811
-    request = HttpRequest()
-    ml = magic_link(request)
-    ml.times_used = settings.TOKEN_USES
-    ml.save()
-    with pytest.raises(MagicLinkError) as error:
-        MagicLink.validate(ml, email=user.email)
-
-    error.match('Magic link has been used too many times')
-
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == settings.TOKEN_USES + 1
-    assert ml.disabled is True

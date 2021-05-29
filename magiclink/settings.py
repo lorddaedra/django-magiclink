@@ -27,11 +27,6 @@ except ValueError:
     raise ImproperlyConfigured('"MAGICLINK_AUTH_TIMEOUT" must be an integer')
 
 try:
-    TOKEN_USES = int(getattr(settings, 'MAGICLINK_TOKEN_USES', 1))
-except ValueError:
-    raise ImproperlyConfigured('"MAGICLINK_TOKEN_USES" must be an integer')
-
-try:
     # In seconds
     LOGIN_REQUEST_TIME_LIMIT = int(getattr(settings, 'MAGICLINK_LOGIN_REQUEST_TIME_LIMIT', 30))
 except ValueError:

@@ -14,10 +14,10 @@ def user():
     return User.objects.latest()
 
 
-@pytest.fixture
+@pytest.fixture()
 def magic_link(user):
 
     def _create(request):
-        return create_magiclink(user.email, request, redirect_url='')
+        return create_magiclink(email=user.email, request=request, redirect_url='')
 
     return _create

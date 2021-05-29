@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from django.http import HttpRequest
 
@@ -26,7 +28,6 @@ def test_auth_backend(user, magic_link):  # NOQA: F811
     )
     assert user
     ml = MagicLink.objects.get(token=ml.token)
-    assert ml.times_used == 1
     assert ml.disabled is True
 
 

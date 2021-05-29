@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractUser
 from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -28,7 +29,7 @@ def create_user(*, email: str) -> None:
     user.save()
 
 
-def create_magiclink(email: str, request: HttpRequest, redirect_url: str = '') -> MagicLink:
+def create_magiclink(*, email: str, request: HttpRequest, redirect_url: str = '') -> MagicLink:
     email = email.lower()
 
     limit = timezone.now() - timedelta(seconds=LOGIN_REQUEST_TIME_LIMIT)  # NOQA: E501
@@ -45,3 +46,26 @@ def create_magiclink(email: str, request: HttpRequest, redirect_url: str = '') -
     magic_link = MagicLink.objects.create(email=email, token=get_random_string(length=TOKEN_LENGTH), expiry=expiry, redirect_url=redirect_url,
                                           ip_address=get_client_ip(request))
     return magic_link
+
+
+def disable_magiclink(*, pk: int) -> None:
+    MagicLink.objects.filter(pk=pk).update(disabled=True)
+
+
+def validate(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
+    if email:
+        email = email.lower()
+
+    if ml.email != email:
+        raise MagicLinkError('Email address does not match')
+
+    if timezone.now() > ml.expiry:
+        disable_magiclink(pk=ml.pk)
+        raise MagicLinkError('Magic link has expired')
+
+    if ml.disabled:
+        raise MagicLinkError('Magic link has been used')
+
+    user = User.objects.get(email=ml.email)
+
+    return user
