@@ -114,7 +114,7 @@ The reasons for the login failing is passed through as the context variable `{{ 
 
 To help tailor the error page and explain the possible reasons the user could not login the following context variables are provided:
 
-* `{{ login_error }}` - The reason the login failed (raised by `MagicLink.validate()`)
+* `{{ login_error }}` - The reason the login failed (raised by `MagicLink.validate_magiclink()`)
 
 
 For an example of this page see the [default login failed template](https://github.com/lorddaedra/django-magiclink/blob/master/magiclink/templates/magiclink/login_failed.html)
@@ -124,7 +124,7 @@ For an example of this page see the [default login failed template](https://gith
 
 The login email which includes the magic link needs to be configured. By default, a simple HTML template is used. You can override the template (see below)
 
-If this email template is not to your liking you can override the email templates (one for text and one for html). To do so you need to override the `MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT` and `MAGICLINK_EMAIL_TEMPLATE_NAME_HTML` settings.  If you override these templates the following context variables are available:
+If this email template is not to your liking you can override the email templates (one for text and one for html). If you override these templates the following context variables are available:
 
 * `{{ subject }}` - The subject of the email "Your login magic link"
 * `{{ magiclink }}` - The magic link URL
@@ -175,11 +175,6 @@ MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
 # Change the url a user is redirect to after requesting a magic link
 MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
 
-# If you want to use your own email templates you can override the text and
-# html templates used with:
-MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT = 'myapp/login_email.text'
-MAGICLINK_EMAIL_TEMPLATE_NAME_HTML = 'myapp/login_email.html'
-
 # How long a magic link is valid for before returning an error
 MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 
@@ -218,16 +213,18 @@ django-magiclink uses a model to help create, send and validate magic links. A `
 
 ```python
 
-from magiclink.services import create_magiclink
-from magiclink.models import MagicLink
+from django.contrib.sites.shortcuts import get_current_site
+from magiclink.services import create_magiclink, generate_url, send_magiclink
+from magiclink.utils import get_client_ip
+
 
 # Returns newly created from magiclink.models.MagicLink instance
-magiclink = create_magiclink(email=email, request=request, redirect_url='')
+magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url='')
 
 # Generates the magic link url and sends it in an email
-MagicLink.send(magiclink, request)
+send_magiclink(ml=magiclink, domain=get_current_site(request).domain, subject='Your login magic link')
 
 # If you want to build the magic link from the model instance but don't want to
 #  send the email you can you can use:
-magic_link_url = MagicLink.generate_url(token=magiclink.token, email=magiclink.email, request=request)
+magic_link_url = generate_url(token=magiclink.token, email=magiclink.email, domain=get_current_site(request).domain)
 ```

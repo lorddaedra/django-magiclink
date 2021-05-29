@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.http import HttpRequest
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch

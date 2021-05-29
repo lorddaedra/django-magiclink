@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from importlib import reload
 from time import time
 
@@ -5,6 +7,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from magiclink import services
 from magiclink.models import MagicLink
 
 User = get_user_model()
@@ -13,7 +16,7 @@ User = get_user_model()
 @pytest.mark.django_db
 def test_signup_end_to_end(mocker, settings, client):
     from magiclink import settings as mlsettings
-    spy = mocker.spy(MagicLink, 'generate_url')
+    spy = mocker.spy(services, 'generate_url')
 
     login_url = reverse('magiclink:signup')
     email = 'test@example.com'
@@ -48,8 +51,7 @@ def test_signup_get(client):
 
 @pytest.mark.django_db
 def test_signup_post(mocker, client, settings):  # NOQA: F811
-    from magiclink import settings as mlsettings
-    send_mail = mocker.patch('magiclink.models.send_mail')
+    send_mail = mocker.patch('magiclink.services.send_mail')
 
     url = reverse('magiclink:signup')
     email = 'test@example.com'
@@ -67,7 +69,7 @@ def test_signup_post(mocker, client, settings):  # NOQA: F811
     assert magiclink
 
     send_mail.assert_called_once_with(
-        subject=mlsettings.EMAIL_SUBJECT,
+        subject='Your login magic link',
         message=mocker.ANY,
         recipient_list=[email],
         from_email=settings.DEFAULT_FROM_EMAIL,

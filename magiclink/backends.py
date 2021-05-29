@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 
 from .models import MagicLink, MagicLinkError
-from .services import disable_magiclink, validate
+from .services import disable_magiclink, validate_magiclink
 
 User = get_user_model()
 log = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class MagicLinkBackend:
             return
 
         try:
-            user = validate(ml=magiclink, email=email)
+            user = validate_magiclink(ml=magiclink, email=email)
         except MagicLinkError as error:
             log.warning(error)
             return

@@ -4,6 +4,7 @@ import logging
 
 from django.conf import settings as django_settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -11,14 +12,16 @@ from django.views.generic.base import RedirectView
 from . import settings
 from .forms import LoginForm, SignupForm
 from .models import MagicLink, MagicLinkError
-from .services import create_magiclink, create_user, validate
-from .utils import get_url_path
+from .services import create_magiclink, create_user, send_magiclink, validate_magiclink
+from .utils import get_client_ip, get_url_path
 
 User = get_user_model()
 log = logging.getLogger(__name__)
 
 
 class Login(TemplateView):
+    form = LoginForm
+    subject: str = 'Your login magic link'
     template_name: str = 'magiclink/login.html'
     style: dict[str, str] = {
         'logo_url': '',
@@ -30,13 +33,13 @@ class Login(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        context['login_form'] = LoginForm()
+        context['login_form'] = self.form()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         logout(request)
         context = self.get_context_data(**kwargs)
-        form = LoginForm(request.POST)
+        form = self.form(request.POST)
         if not form.is_valid():
             context['login_form'] = form
             return self.render_to_response(context)
@@ -45,13 +48,13 @@ class Login(TemplateView):
 
         next_url = request.GET.get('next', '')
         try:
-            magiclink = create_magiclink(email=email, request=request, redirect_url=next_url)
+            magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url)
         except MagicLinkError as e:
             form.add_error('email', str(e))
             context['login_form'] = form
             return self.render_to_response(context)
 
-        MagicLink.send(magiclink, request, style=self.style)
+        send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)
@@ -80,7 +83,7 @@ class LoginVerify(TemplateView):
                 return self.render_to_response(context)
 
             try:
-                validate(ml=magiclink, email=email)
+                validate_magiclink(ml=magiclink, email=email)
             except MagicLinkError as error:
                 context['login_error'] = str(error)
 
@@ -96,6 +99,7 @@ class LoginVerify(TemplateView):
 
 class Signup(TemplateView):
     form = SignupForm
+    subject = 'Your login magic link'
     template_name: str = 'magiclink/signup.html'
     style: dict[str, str] = {
         'logo_url': '',
@@ -124,8 +128,8 @@ class Signup(TemplateView):
         create_user(email=email)
         default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
         next_url = request.GET.get('next', default_signup_redirect)
-        magiclink = create_magiclink(email=email, request=request, redirect_url=next_url)
-        MagicLink.send(magiclink, request, style=self.style)
+        magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url)
+        send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
         response = HttpResponseRedirect(sent_url)

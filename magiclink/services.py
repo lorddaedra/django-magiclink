@@ -3,17 +3,21 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from secrets import token_urlsafe
+from typing import Optional
+from urllib.parse import urlencode, urljoin
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
-from django.http import HttpRequest
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
 
 from magiclink.models import MagicLink, MagicLinkError
 from magiclink.settings import AUTH_TIMEOUT, LOGIN_REQUEST_TIME_LIMIT
-from magiclink.utils import get_client_ip, get_url_path
+from magiclink.utils import get_url_path
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -29,7 +33,7 @@ def create_user(*, email: str) -> None:
     user.save()
 
 
-def create_magiclink(*, email: str, request: HttpRequest, redirect_url: str = '') -> MagicLink:
+def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '') -> MagicLink:
     email = email.lower()
 
     limit = timezone.now() - timedelta(seconds=LOGIN_REQUEST_TIME_LIMIT)  # NOQA: E501
@@ -44,7 +48,7 @@ def create_magiclink(*, email: str, request: HttpRequest, redirect_url: str = ''
 
     expiry = timezone.now() + timedelta(seconds=AUTH_TIMEOUT)
     magic_link = MagicLink.objects.create(email=email, token=token_urlsafe(), expiry=expiry, redirect_url=redirect_url,
-                                          ip_address=get_client_ip(request))
+                                          ip_address=ip_address)
     return magic_link
 
 
@@ -52,7 +56,7 @@ def disable_magiclink(*, pk: int) -> None:
     MagicLink.objects.filter(pk=pk).update(disabled=True)
 
 
-def validate(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
+def validate_magiclink(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
     if email:
         email = email.lower()
 
@@ -69,3 +73,44 @@ def validate(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
     user = User.objects.get(email=ml.email)
 
     return user
+
+
+def send_magiclink(*, ml: 'MagicLink', domain: str, subject: str,
+                   email_templates: tuple[str, str] = ('magiclink/login_email.txt', 'magiclink/login_email.html'),
+                   style: Optional[dict[str, str]] = None) -> None:
+    user = User.objects.get(email=ml.email)
+    context = {
+        'subject': subject,
+        'user': user,
+        'magiclink': generate_url(token=ml.token, email=ml.email, domain=domain),
+        'expiry': ml.expiry,
+        'ip_address': ml.ip_address,
+        'created': ml.created,
+        'style': style if style else {
+            'logo_url': '',
+            'background_color': '#ffffff',
+            'main_text_color': '#000000',
+            'button_background_color': '#0078be',
+            'button_text_color': '#ffffff',
+        },
+    }
+    plain = render_to_string(email_templates[0], context)
+    html = render_to_string(email_templates[1], context)
+    send_mail(
+        subject=subject,
+        message=plain,
+        recipient_list=[user.email],
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        html_message=html,
+    )
+
+
+def generate_url(*, token: str, email: str, domain: str) -> str:
+    url_path = reverse("magiclink:login_verify")
+
+    params = {'token': token, 'email': email}
+    query = urlencode(params)
+
+    url_path = f'{url_path}?{query}'
+    url = urljoin(f'https://{domain}', url_path)
+    return url

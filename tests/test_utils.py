@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.http import HttpRequest
 
 from magiclink.utils import get_client_ip, get_url_path

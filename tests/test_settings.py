@@ -20,27 +20,6 @@ def test_signup_login_redirect(settings):
     assert mlsettings.SIGNUP_LOGIN_REDIRECT == settings.MAGICLINK_SIGNUP_LOGIN_REDIRECT  # NOQA: E501
 
 
-def test_email_subject(settings):
-    settings.MAGICLINK_EMAIL_SUBJECT = 'Test Email subject'
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_SUBJECT == settings.MAGICLINK_EMAIL_SUBJECT
-
-
-def test_email_template_name_text(settings):
-    settings.MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT = 'email.txt'
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_TEMPLATE_NAME_TEXT == settings.MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT  # NOQA: E501
-
-
-def test_email_template_name_html(settings):
-    settings.MAGICLINK_EMAIL_TEMPLATE_NAME_HTML = 'email.html'
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_TEMPLATE_NAME_HTML == settings.MAGICLINK_EMAIL_TEMPLATE_NAME_HTML  # NOQA: E501
-
-
 def test_auth_timeout(settings):
     settings.MAGICLINK_AUTH_TIMEOUT = 100
     from magiclink import settings as mlsettings

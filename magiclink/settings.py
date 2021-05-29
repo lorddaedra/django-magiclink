@@ -23,11 +23,6 @@ except ValueError:
     raise ImproperlyConfigured('"MAGICLINK_LOGIN_REQUEST_TIME_LIMIT" must be an integer')
 
 
-EMAIL_SUBJECT = getattr(settings, 'MAGICLINK_EMAIL_SUBJECT', 'Your login magic link')
-EMAIL_TEMPLATE_NAME_TEXT = getattr(settings, 'MAGICLINK_EMAIL_TEMPLATE_NAME_TEXT', 'magiclink/login_email.txt')
-EMAIL_TEMPLATE_NAME_HTML = getattr(settings, 'MAGICLINK_EMAIL_TEMPLATE_NAME_HTML', 'magiclink/login_email.html')
-
-
 ANTISPAM_FORMS = getattr(settings, 'MAGICLINK_ANTISPAM_FORMS', False)
 if not isinstance(ANTISPAM_FORMS, bool):
     raise ImproperlyConfigured('"MAGICLINK_ANTISPAM_FORMS" must be a boolean')
