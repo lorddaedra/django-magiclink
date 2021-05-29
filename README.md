@@ -175,9 +175,6 @@ MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
 # Change the url a user is redirect to after requesting a magic link
 MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
 
-# How long a magic link is valid for before returning an error
-MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
-
 # Include basic anti spam form fields to help stop bots. False by default
 # Note: IF you use the default forms you will need to add CSS to your
 # page / stylesheet to hide the labels for the anti spam fields.

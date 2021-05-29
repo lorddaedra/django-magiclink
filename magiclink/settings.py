@@ -10,12 +10,6 @@ LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magicl
 
 SIGNUP_LOGIN_REDIRECT = getattr(settings, 'MAGICLINK_SIGNUP_LOGIN_REDIRECT', '')
 
-try:
-    # In seconds
-    AUTH_TIMEOUT = int(getattr(settings, 'MAGICLINK_AUTH_TIMEOUT', 300))
-except ValueError:
-    raise ImproperlyConfigured('"MAGICLINK_AUTH_TIMEOUT" must be an integer')
-
 ANTISPAM_FORMS = getattr(settings, 'MAGICLINK_ANTISPAM_FORMS', False)
 if not isinstance(ANTISPAM_FORMS, bool):
     raise ImproperlyConfigured('"MAGICLINK_ANTISPAM_FORMS" must be a boolean')

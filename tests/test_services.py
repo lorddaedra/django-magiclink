@@ -10,7 +10,6 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 
-from magiclink import settings as mlsettings
 from magiclink.models import MagicLink, MagicLinkError
 from magiclink.services import create_magiclink, create_user, generate_url, send_magiclink, validate_magiclink
 from magiclink.utils import get_client_ip
@@ -26,7 +25,7 @@ def test_create_magiclink(settings, freezer):
 
     email = 'test@example.com'
     remote_addr = '127.0.0.1'
-    expiry = timezone.now() + timedelta(seconds=mlsettings.AUTH_TIMEOUT)
+    expiry = timezone.now() + timedelta(seconds=900)
     request = HttpRequest()
     request.META['REMOTE_ADDR'] = remote_addr
     magic_link = create_magiclink(email=email, ip_address=get_client_ip(request))  # NOQA: F811

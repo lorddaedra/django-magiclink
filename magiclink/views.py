@@ -21,6 +21,8 @@ log = logging.getLogger(__name__)
 
 class Login(TemplateView):
     form = LoginForm
+    limit_seconds = 3
+    expiry_seconds = 900
     subject: str = 'Your login magic link'
     template_name: str = 'magiclink/login.html'
     style: dict[str, str] = {
@@ -48,7 +50,8 @@ class Login(TemplateView):
 
         next_url = request.GET.get('next', '')
         try:
-            magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url)
+            magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
+                                         limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
         except MagicLinkError as e:
             form.add_error('email', str(e))
             context['login_form'] = form
@@ -99,6 +102,8 @@ class LoginVerify(TemplateView):
 
 class Signup(TemplateView):
     form = SignupForm
+    limit_seconds = 3
+    expiry_seconds = 900
     subject = 'Your login magic link'
     template_name: str = 'magiclink/signup.html'
     style: dict[str, str] = {
@@ -128,7 +133,8 @@ class Signup(TemplateView):
         create_user(email=email)
         default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
         next_url = request.GET.get('next', default_signup_redirect)
-        magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url)
+        magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
+                                     limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
         sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
