@@ -84,8 +84,7 @@ class LoginForm(AntiSpam):
             error = 'We could not find a user with that email address'
             raise forms.ValidationError(error)
         else:
-            is_active = getattr(user, 'is_active', True)
-            if not settings.IGNORE_IS_ACTIVE_FLAG and not is_active:
+            if not user.is_active:
                 raise forms.ValidationError('This user has been deactivated')
 
         return email
@@ -105,7 +104,6 @@ class SignupForm(AntiSpam):
             return email
         else:
             error = 'Email address is already linked to an account'
-            is_active = getattr(user, 'is_active', True)
-            if not settings.IGNORE_IS_ACTIVE_FLAG and not is_active:
+            if not user.is_active:
                 error = 'This user has been deactivated'
             raise forms.ValidationError(error)

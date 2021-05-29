@@ -31,10 +31,6 @@ try:
 except ValueError:
     raise ImproperlyConfigured('"MAGICLINK_TOKEN_USES" must be an integer')
 
-IGNORE_IS_ACTIVE_FLAG = getattr(settings, 'MAGICLINK_IGNORE_IS_ACTIVE_FLAG', False)
-if not isinstance(IGNORE_IS_ACTIVE_FLAG, bool):
-    raise ImproperlyConfigured('"MAGICLINK_IGNORE_IS_ACTIVE_FLAG" must be a boolean')
-
 VERIFY_INCLUDE_EMAIL = getattr(settings, 'MAGICLINK_VERIFY_INCLUDE_EMAIL', True)
 if not isinstance(VERIFY_INCLUDE_EMAIL, bool):
     raise ImproperlyConfigured('"MAGICLINK_VERIFY_INCLUDE_EMAIL" must be a boolean')

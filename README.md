@@ -184,9 +184,6 @@ MAGICLINK_EMAIL_TEMPLATE_NAME_HTML = 'myapp/login_email.html'
 # How long a magic link is valid for before returning an error
 MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 
-# Ignore the Django user model's is_active flag for login requests
-MAGICLINK_IGNORE_IS_ACTIVE_FLAG = True
-
 # Override the default magic link length
 # Warning: Overriding this setting has security implications, shorter tokens
 # are much more susceptible to brute force attacks*

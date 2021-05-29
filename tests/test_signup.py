@@ -106,25 +106,6 @@ def test_signup_form_user_exists_inactive(mocker, client):
 
 
 @pytest.mark.django_db
-def test_signup_form_user_exists_ignore_active_flag(mocker, client, settings):
-    settings.MAGICLINK_IGNORE_IS_ACTIVE_FLAG = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-
-    email = 'test@example.com'
-    User.objects.create(email=email, is_active=False)
-    url = reverse('magiclink:signup')
-
-    data = {
-        'email': email,
-    }
-    response = client.post(url, data)
-    assert response.status_code == 200
-    error = ['Email address is already linked to an account']
-    response.context_data['signup_form'].errors['email'] == error
-
-
-@pytest.mark.django_db
 def test_signup_form_email_only(mocker, client):
     url = reverse('magiclink:signup')
     email = 'test@example.com'

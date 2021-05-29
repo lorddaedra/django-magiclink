@@ -94,14 +94,6 @@ def test_token_uses_bad_value(settings):
         reload(settings)
 
 
-def test_ignore_active_flag_bad_value(settings):
-    settings.MAGICLINK_IGNORE_IS_ACTIVE_FLAG = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_verify_include_email(settings):
     settings.MAGICLINK_VERIFY_INCLUDE_EMAIL = True
     from magiclink import settings as mlsettings
