@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from magiclink.models import MagicLink, MagicLinkError
-from magiclink.settings import AUTH_TIMEOUT, LOGIN_REQUEST_TIME_LIMIT
+from magiclink.settings import AUTH_TIMEOUT
 from magiclink.utils import get_url_path
 
 logger = logging.getLogger(__name__)
@@ -33,10 +33,10 @@ def create_user(*, email: str) -> None:
     user.save()
 
 
-def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '') -> MagicLink:
+def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '', seconds: int = 3) -> MagicLink:
     email = email.lower()
 
-    limit = timezone.now() - timedelta(seconds=LOGIN_REQUEST_TIME_LIMIT)  # NOQA: E501
+    limit = timezone.now() - timedelta(seconds=seconds)  # NOQA: E501
     over_limit = MagicLink.objects.filter(email=email, created__gte=limit)
     if over_limit:
         raise MagicLinkError('Too many magic login requests')

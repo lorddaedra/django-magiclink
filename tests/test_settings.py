@@ -35,21 +35,6 @@ def test_auth_timeout_bad_value(settings):
         reload(settings)
 
 
-def test_token_request_time_limit(settings):
-    settings.MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.LOGIN_REQUEST_TIME_LIMIT == settings.MAGICLINK_LOGIN_REQUEST_TIME_LIMIT  # NOQA: E501
-
-
-def test_token_request_time_limit_bad_value(settings):
-    settings.MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_antispam_forms(settings):
     settings.MAGICLINK_ANTISPAM_FORMS = True
     from magiclink import settings as mlsettings

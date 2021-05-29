@@ -178,9 +178,6 @@ MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
 # How long a magic link is valid for before returning an error
 MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 
-# How often a user can request a new login token (basic rate limiting).
-MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = 30  # In seconds
-
 # Include basic anti spam form fields to help stop bots. False by default
 # Note: IF you use the default forms you will need to add CSS to your
 # page / stylesheet to hide the labels for the anti spam fields.
