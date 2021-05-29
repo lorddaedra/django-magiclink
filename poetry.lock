@@ -363,6 +363,14 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "timeflake"
+version = "0.4.0"
+description = "Timeflake is a 128-bit, roughly-ordered, URL-safe UUID. Inspired by Twitter's Snowflake, Instagram's ID and Firebase's PushID."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -429,7 +437,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "55b814ec6e55267e3ac5416fcad9b3aeeeb8c305c629804a5f2a65461f74854b"
+content-hash = "de699c12e6d821bd7c38973b04efd9c5295d8faeb36c36a40afe5cefdccb7809"
 
 [metadata.files]
 appdirs = [
@@ -633,6 +641,10 @@ six = [
 sqlparse = [
     {file = "sqlparse-0.4.1-py3-none-any.whl", hash = "sha256:017cde379adbd6a1f15a61873f43e8274179378e95ef3fede90b5aa64d304ed0"},
     {file = "sqlparse-0.4.1.tar.gz", hash = "sha256:0f91fd2e829c44362cbcfab3e9ae12e22badaa8a29ad5ff599f9ec109f0454e8"},
+]
+timeflake = [
+    {file = "timeflake-0.4.0-py3-none-any.whl", hash = "sha256:f2ed81dc2586de9254ce109b07ea5058d55b0a5220409ed842c1894637453541"},
+    {file = "timeflake-0.4.0.tar.gz", hash = "sha256:be63f67f85b62895297a42b37729a5f675868662c78546cb892c2b130ae7f3f2"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

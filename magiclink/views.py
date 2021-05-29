@@ -8,8 +8,8 @@ from django.views.generic.base import RedirectView
 
 from . import settings
 from .forms import LoginForm, SignupForm
-from .helpers import create_magiclink, get_or_create_user
 from .models import MagicLink, MagicLinkError
+from .services import create_magiclink, create_user
 from .utils import get_url_path
 
 User = get_user_model()
@@ -118,19 +118,8 @@ class Signup(TemplateView):
             return self.render_to_response(context)
 
         email = form.cleaned_data['email']
-        full_name = form.cleaned_data.get('name', '')
-        try:
-            first_name, last_name = full_name.split(' ', 1)
-        except ValueError:
-            first_name = full_name
-            last_name = ''
 
-        get_or_create_user(
-            email=email,
-            username=form.cleaned_data.get('username', ''),
-            first_name=first_name,
-            last_name=last_name
-        )
+        create_user(email=email)
         default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
         next_url = request.GET.get('next', default_signup_redirect)
         magiclink = create_magiclink(email, request, redirect_url=next_url)

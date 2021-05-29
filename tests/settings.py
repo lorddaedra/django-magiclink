@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 
 SECRET_KEY = 'magiclink-test'
@@ -56,6 +58,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+AUTH_USER_MODEL = 'tests.User'
 LOGIN_URL = 'magiclink:login'
 LOGIN_REDIRECT_URL = 'needs_login'
 LOGOUT_REDIRECT_URL = 'no_login'

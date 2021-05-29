@@ -8,8 +8,8 @@ description = "Passwordless authentication for Django with Magic Links"
 authors = ["Matt Pye <pyematt@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-repository = "https://github.com/pyepye/django-magiclink"
-homepage = "https://github.com/pyepye/django-magiclink"
+repository = "https://github.com/lorddaedra/django-magiclink"
+homepage = "https://github.com/lorddaedra/django-magiclink"
 keywords = ["magic link", "authentication", "passwordless"]
 
 [tool.poetry.dependencies]
@@ -26,6 +26,7 @@ pytest-cov = "^2.10.0"
 pytest-django = "^4.3.0"
 pytest-mock = "^3.2.0"
 pytest-freezegun = "^0.4.1"
+timeflake = "^0.4.0"
 
 [tool.isort]
 line_length = 160

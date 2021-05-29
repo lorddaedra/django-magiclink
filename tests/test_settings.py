@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from importlib import reload
 
 import pytest
@@ -86,36 +88,6 @@ def test_token_uses(settings):
 
 def test_token_uses_bad_value(settings):
     settings.MAGICLINK_TOKEN_USES = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
-def test_email_ignore_case(settings):
-    settings.MAGICLINK_EMAIL_IGNORE_CASE = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_IGNORE_CASE == settings.MAGICLINK_EMAIL_IGNORE_CASE
-
-
-def test_email_ignore_case_bad_value(settings):
-    settings.MAGICLINK_EMAIL_IGNORE_CASE = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
-def test_email_as_username(settings):
-    settings.MAGICLINK_EMAIL_AS_USERNAME = True
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.EMAIL_AS_USERNAME == settings.MAGICLINK_EMAIL_AS_USERNAME
-
-
-def test_email_as_username_bad_value(settings):
-    settings.MAGICLINK_EMAIL_AS_USERNAME = 'Test'
 
     with pytest.raises(ImproperlyConfigured):
         from magiclink import settings

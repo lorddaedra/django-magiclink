@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 from urllib.parse import urlencode, urljoin
 
@@ -93,7 +95,7 @@ class MagicLink(models.Model):
 
     @staticmethod
     def validate(ml: 'MagicLink', email: str = '') -> AbstractUser:
-        if settings.EMAIL_IGNORE_CASE and email:
+        if email:
             email = email.lower()
 
         if settings.VERIFY_INCLUDE_EMAIL and ml.email != email:

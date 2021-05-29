@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # flake8: noqa: E501
 import warnings
 
@@ -28,14 +30,6 @@ try:
     TOKEN_USES = int(getattr(settings, 'MAGICLINK_TOKEN_USES', 1))
 except ValueError:
     raise ImproperlyConfigured('"MAGICLINK_TOKEN_USES" must be an integer')
-
-EMAIL_IGNORE_CASE = getattr(settings, 'MAGICLINK_EMAIL_IGNORE_CASE', True)
-if not isinstance(EMAIL_IGNORE_CASE, bool):
-    raise ImproperlyConfigured('"MAGICLINK_EMAIL_IGNORE_CASE" must be a boolean')
-
-EMAIL_AS_USERNAME = getattr(settings, 'MAGICLINK_EMAIL_AS_USERNAME', True)
-if not isinstance(EMAIL_AS_USERNAME, bool):
-    raise ImproperlyConfigured('"MAGICLINK_EMAIL_AS_USERNAME" must be a boolean')
 
 IGNORE_IS_ACTIVE_FLAG = getattr(settings, 'MAGICLINK_IGNORE_IS_ACTIVE_FLAG', False)
 if not isinstance(IGNORE_IS_ACTIVE_FLAG, bool):

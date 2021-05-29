@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from time import time
 
 from django import forms
@@ -74,8 +76,7 @@ class LoginForm(AntiSpam):
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
 
-        if settings.EMAIL_IGNORE_CASE:
-            email = email.lower()
+        email = email.lower()
 
         try:
             user = User.objects.get(email=email)
@@ -96,8 +97,7 @@ class SignupForm(AntiSpam):
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
 
-        if settings.EMAIL_IGNORE_CASE:
-            email = email.lower()
+        email = email.lower()
 
         try:
             user = User.objects.get(email=email)
