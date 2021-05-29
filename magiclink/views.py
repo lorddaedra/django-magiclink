@@ -6,6 +6,8 @@ from django.conf import settings as django_settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
+from django.shortcuts import resolve_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -48,7 +50,10 @@ class Login(TemplateView):
 
         email = form.cleaned_data['email']
 
-        next_url = request.GET.get('next', '')
+        redirect_to: str = self.request.POST.get('next', self.request.GET.get('next', ''))
+        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={self.request.get_host()}, require_https=True)
+        next_url: str = redirect_to if url_is_safe else resolve_url(django_settings.LOGIN_REDIRECT_URL)
+
         try:
             magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
                                          limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
@@ -59,9 +64,7 @@ class Login(TemplateView):
 
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
-        response = HttpResponseRedirect(sent_url)
-        return response
+        return HttpResponseRedirect(get_url_path(settings.LOGIN_SENT_REDIRECT))
 
 
 class LoginSent(TemplateView):
@@ -96,8 +99,8 @@ class LoginVerify(TemplateView):
         log.info(f'Login successful for {email}')
 
         magiclink = MagicLink.objects.get(token=token)
-        response = HttpResponseRedirect(magiclink.redirect_url)
-        return response
+
+        return HttpResponseRedirect(magiclink.redirect_url)
 
 
 class Signup(TemplateView):
@@ -131,15 +134,16 @@ class Signup(TemplateView):
         email = form.cleaned_data['email']
 
         create_user(email=email)
-        default_signup_redirect = get_url_path(settings.SIGNUP_LOGIN_REDIRECT)
-        next_url = request.GET.get('next', default_signup_redirect)
+
+        redirect_to: str = self.request.POST.get('next', self.request.GET.get('next', ''))
+        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={self.request.get_host()}, require_https=True)
+        next_url: str = redirect_to if url_is_safe else resolve_url(settings.SIGNUP_LOGIN_REDIRECT)
+
         magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
                                      limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        sent_url = get_url_path(settings.LOGIN_SENT_REDIRECT)
-        response = HttpResponseRedirect(sent_url)
-        return response
+        return HttpResponseRedirect(get_url_path(settings.LOGIN_SENT_REDIRECT))
 
 
 class Logout(RedirectView):
@@ -151,5 +155,4 @@ class Logout(RedirectView):
         if next_page:
             return HttpResponseRedirect(next_page)
 
-        redirect_url = get_url_path(django_settings.LOGOUT_REDIRECT_URL)
-        return HttpResponseRedirect(redirect_url)
+        return HttpResponseRedirect(get_url_path(django_settings.LOGOUT_REDIRECT_URL))

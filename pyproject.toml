@@ -14,7 +14,7 @@ keywords = ["magic link", "authentication", "passwordless"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = ">=2.2"
+Django = ">=3.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
