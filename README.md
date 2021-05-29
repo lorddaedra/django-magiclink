@@ -174,17 +174,6 @@ MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
 
 # Change the url a user is redirect to after requesting a magic link
 MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
-
-# Include basic anti spam form fields to help stop bots. False by default
-# Note: IF you use the default forms you will need to add CSS to your
-# page / stylesheet to hide the labels for the anti spam fields.
-# See the login.html or signup.html for an example
-MAGICLINK_ANTISPAM_FORMS = False
-# The shortest time a user can fill out each field and submit a form without
-# being considered a bot. The time is per field and defaults to 1 second.
-# This means if the form has 3 fields and the user will need to make more than
-# 3 seconds to fill out a form.
-MAGICLINK_ANTISPAM_FIELD_TIME = 1
 ```
 
 
