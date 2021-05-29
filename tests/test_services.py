@@ -28,7 +28,7 @@ def test_create_magiclink(settings, freezer):
     request.META['REMOTE_ADDR'] = remote_addr
     magic_link = create_magiclink(email=email, request=request)  # NOQA: F811
     assert magic_link.email == email
-    assert len(magic_link.token) == mlsettings.TOKEN_LENGTH
+    assert len(magic_link.token) >= 43
     assert magic_link.expiry == expiry
     assert magic_link.redirect_url == reverse(settings.LOGIN_REDIRECT_URL)
     assert magic_link.ip_address == remote_addr

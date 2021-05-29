@@ -41,29 +41,6 @@ def test_email_template_name_html(settings):
     assert mlsettings.EMAIL_TEMPLATE_NAME_HTML == settings.MAGICLINK_EMAIL_TEMPLATE_NAME_HTML  # NOQA: E501
 
 
-def test_token_length(settings):
-    settings.MAGICLINK_TOKEN_LENGTH = 100
-    from magiclink import settings as mlsettings
-    reload(mlsettings)
-    assert mlsettings.TOKEN_LENGTH == settings.MAGICLINK_TOKEN_LENGTH
-
-
-def test_token_length_bad_value(settings):
-    settings.MAGICLINK_TOKEN_LENGTH = 'Test'
-
-    with pytest.raises(ImproperlyConfigured):
-        from magiclink import settings
-        reload(settings)
-
-
-def test_token_length_low_value_warning(settings):
-    settings.MAGICLINK_TOKEN_LENGTH = 1
-
-    with pytest.warns(RuntimeWarning):
-        from magiclink import settings
-        reload(settings)
-
-
 def test_auth_timeout(settings):
     settings.MAGICLINK_AUTH_TIMEOUT = 100
     from magiclink import settings as mlsettings

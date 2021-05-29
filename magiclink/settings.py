@@ -1,24 +1,14 @@
 from __future__ import annotations
 
-# flake8: noqa: E501
-import warnings
-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
+# flake8: noqa: E501
+
 
 LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magiclink:login_sent')
 
 SIGNUP_LOGIN_REDIRECT = getattr(settings, 'MAGICLINK_SIGNUP_LOGIN_REDIRECT', '')
-
-try:
-    TOKEN_LENGTH = int(getattr(settings, 'MAGICLINK_TOKEN_LENGTH', 50))
-except ValueError:
-    raise ImproperlyConfigured('"MAGICLINK_TOKEN_LENGTH" must be an integer')
-else:
-    if TOKEN_LENGTH < 20:
-        warning = ('Shorter MAGICLINK_TOKEN_LENGTH values make your login more'
-                   'sussptable to brute force attacks')
-        warnings.warn(warning, RuntimeWarning)
 
 try:
     # In seconds

@@ -183,11 +183,6 @@ MAGICLINK_EMAIL_TEMPLATE_NAME_HTML = 'myapp/login_email.html'
 # How long a magic link is valid for before returning an error
 MAGICLINK_AUTH_TIMEOUT = 300  # In second - Default is 5 minutes
 
-# Override the default magic link length
-# Warning: Overriding this setting has security implications, shorter tokens
-# are much more susceptible to brute force attacks*
-MAGICLINK_TOKEN_LENGTH = 50
-
 # How often a user can request a new login token (basic rate limiting).
 MAGICLINK_LOGIN_REQUEST_TIME_LIMIT = 30  # In seconds
 
