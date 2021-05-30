@@ -36,7 +36,7 @@ def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '', lim
     email = email.lower()
 
     limit = timezone.now() - timedelta(seconds=limit_seconds)  # NOQA: E501
-    over_limit = MagicLink.objects.filter(email=email, created__gte=limit)
+    over_limit = MagicLink.objects.filter(email=email, date_created__gte=limit)
     if over_limit:
         raise MagicLinkError('Too many magic login requests')
 
@@ -84,7 +84,7 @@ def send_magiclink(*, ml: 'MagicLink', domain: str, subject: str,
         'magiclink': generate_url(token=ml.token, email=ml.email, domain=domain),
         'expiry': ml.expiry,
         'ip_address': ml.ip_address,
-        'created': ml.created,
+        'date_created': ml.date_created,
         'style': style if style else {
             'logo_url': '',
             'background_color': '#ffffff',

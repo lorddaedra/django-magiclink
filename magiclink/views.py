@@ -22,7 +22,7 @@ from .services import create_magiclink, create_user, send_magiclink, validate_ma
 from .utils import get_client_ip, get_url_path
 
 User = get_user_model()
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @method_decorator((user_passes_test(lambda u: not u.is_authenticated, login_url='/'), sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
@@ -110,7 +110,7 @@ class LoginVerifyView(TemplateView):
             return self.render_to_response(context)
 
         login(request, user)
-        log.info(f'Login successful for {email}')
+        logger.info(f'Login successful for {email}')
 
         magiclink = MagicLink.objects.get(token=token)
 

@@ -177,7 +177,7 @@ def test_send_email(mocker, settings, magic_link):  # NOQA: F811
         'magiclink': generate_url(token=ml.token, email=ml.email, domain=get_current_site(request).domain),
         'expiry': ml.expiry,
         'ip_address': ml.ip_address,
-        'created': ml.created,
+        'date_created': ml.date_created,
         'style': style,
     }
     render_to_string.assert_has_calls([

@@ -131,7 +131,7 @@ If this email template is not to your liking you can override the email template
 * `{{ user }}` - The full user object
 * `{{ expiry }}` - Datetime for when the magiclink expires
 * `{{ ip_address }}` - The IP address of the person who requested the magic link
-* `{{ created }}` - Datetime of when the magic link was created
+* `{{ date_created }}` - Datetime of when the magic link was created
 
 
 #### Signup page
