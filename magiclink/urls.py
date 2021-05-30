@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from django.urls import path
 
-from .views import Login, LoginSent, LoginVerify, Logout, Signup
+from .views import LoginSentView, LoginVerifyView, LoginView, LogoutView, SignupView
 
 app_name = "magiclink"
 
 urlpatterns = [
-    path('login/', Login.as_view(), name='login'),
-    path('login/sent/', LoginSent.as_view(), name='login_sent'),
-    path('signup/', Signup.as_view(), name='signup'),
-    path('login/verify/', LoginVerify.as_view(), name='login_verify'),
-    path('logout/', Logout.as_view(), name='logout'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('login/sent/', LoginSentView.as_view(), name='login_sent'),
+    path('signup/', SignupView.as_view(), name='signup'),
+    path('login/verify/', LoginVerifyView.as_view(), name='login_verify'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import logging
 
-from django.conf import settings as django_settings
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponseRedirect
-from django.shortcuts import resolve_url
+from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.views import View
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
-from django.views.generic.base import RedirectView
 
-from . import settings
+from . import settings as ml_settings
 from .forms import LoginForm, SignupForm
 from .models import MagicLink, MagicLinkError
 from .services import create_magiclink, create_user, send_magiclink, validate_magiclink
@@ -21,7 +24,8 @@ User = get_user_model()
 log = logging.getLogger(__name__)
 
 
-class Login(TemplateView):
+@method_decorator((sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
+class LoginView(TemplateView):
     form = LoginForm
     limit_seconds = 3
     expiry_seconds = 900
@@ -34,6 +38,7 @@ class Login(TemplateView):
         'button_background_color': '#0078be',
         'button_text_color': '#ffffff',
     }
+    next_page: str = ml_settings.LOGIN_SENT_REDIRECT
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -50,9 +55,9 @@ class Login(TemplateView):
 
         email = form.cleaned_data['email']
 
-        redirect_to: str = self.request.POST.get('next', self.request.GET.get('next', ''))
-        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={self.request.get_host()}, require_https=True)
-        next_url: str = redirect_to if url_is_safe else resolve_url(django_settings.LOGIN_REDIRECT_URL)
+        redirect_to: str = request.POST.get('next', request.GET.get('next', ''))
+        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={request.get_host()}, require_https=True)
+        next_url: str = redirect_to if url_is_safe else get_url_path(settings.LOGIN_REDIRECT_URL)
 
         try:
             magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
@@ -64,19 +69,20 @@ class Login(TemplateView):
 
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        return HttpResponseRedirect(get_url_path(settings.LOGIN_SENT_REDIRECT))
+        return HttpResponseRedirect(get_url_path(self.next_page))
 
 
-class LoginSent(TemplateView):
+class LoginSentView(TemplateView):
     template_name: str = 'magiclink/login_sent.html'
 
 
-class LoginVerify(TemplateView):
+@method_decorator(never_cache, name='dispatch')
+class LoginVerifyView(TemplateView):
     template_name: str = 'magiclink/login_failed.html'
 
     def get(self, request, *args, **kwargs):
-        token = request.GET.get('token')
-        email = request.GET.get('email')
+        token = request.GET.get('token', '')
+        email = request.GET.get('email', '')
         user = authenticate(request, token=token, email=email)
         if not user:
             context = self.get_context_data(**kwargs)
@@ -103,7 +109,8 @@ class LoginVerify(TemplateView):
         return HttpResponseRedirect(magiclink.redirect_url)
 
 
-class Signup(TemplateView):
+@method_decorator((sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
+class SignupView(TemplateView):
     form = SignupForm
     limit_seconds = 3
     expiry_seconds = 900
@@ -116,6 +123,7 @@ class Signup(TemplateView):
         'button_background_color': '#0078be',
         'button_text_color': '#ffffff',
     }
+    next_page: str = ml_settings.LOGIN_SENT_REDIRECT
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -135,24 +143,35 @@ class Signup(TemplateView):
 
         create_user(email=email)
 
-        redirect_to: str = self.request.POST.get('next', self.request.GET.get('next', ''))
-        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={self.request.get_host()}, require_https=True)
-        next_url: str = redirect_to if url_is_safe else resolve_url(settings.SIGNUP_LOGIN_REDIRECT)
+        redirect_to: str = request.POST.get('next', request.GET.get('next', ''))
+        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={request.get_host()}, require_https=True)
+        next_url: str = redirect_to if url_is_safe else get_url_path(ml_settings.SIGNUP_LOGIN_REDIRECT)
 
         magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url=next_url,
                                      limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        return HttpResponseRedirect(get_url_path(settings.LOGIN_SENT_REDIRECT))
+        return HttpResponseRedirect(get_url_path(self.next_page))
 
 
-class Logout(RedirectView):
+class LogoutView(View):
+    """
+    Log out the user.
+    """
+    next_page: str = settings.LOGOUT_REDIRECT_URL
 
-    def get(self, request, *args, **kwargs):
-        logout(self.request)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        logout(request)
 
-        next_page = request.GET.get('next')
-        if next_page:
-            return HttpResponseRedirect(next_page)
+        redirect_to: str = request.POST.get('next', request.GET.get('next', ''))
+        url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={request.get_host()}, require_https=True)
+        next_url: str = redirect_to if url_is_safe else get_url_path(self.next_page)
 
-        return HttpResponseRedirect(get_url_path(django_settings.LOGOUT_REDIRECT_URL))
+        if request.META.get("HTTP_HX_REQUEST") != 'true':
+            return HttpResponseRedirect(next_url)
+
+        # htmx request
+        response: HttpResponse = HttpResponse()
+        response.headers['HX-Redirect'] = next_url
+        return response
