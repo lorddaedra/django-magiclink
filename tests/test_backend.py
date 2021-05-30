@@ -28,7 +28,7 @@ def test_auth_backend(user, magic_link):  # NOQA: F811
     )
     assert user
     ml = MagicLink.objects.get(token=ml.token)
-    assert ml.disabled is True
+    assert ml.is_active is False
 
 
 @pytest.mark.django_db
@@ -44,7 +44,7 @@ def test_auth_backend_no_token(user, magic_link):  # NOQA: F811
 def test_auth_backend_disabled_token(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    ml.disabled = True
+    ml.is_active = False
     ml.save()
     user = MagicLinkBackend().authenticate(
         request=request, token=ml.token, email=user.email

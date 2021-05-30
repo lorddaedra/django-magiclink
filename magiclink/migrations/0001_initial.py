@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('token', models.TextField()),
                 ('expiry', models.DateTimeField()),
                 ('redirect_url', models.TextField()),
-                ('disabled', models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=True)),
                 ('ip_address', models.GenericIPAddressField(null=True)),
                 ('date_created', models.DateTimeField(auto_now_add=True)),
             ],

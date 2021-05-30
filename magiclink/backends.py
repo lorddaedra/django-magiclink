@@ -31,8 +31,8 @@ class MagicLinkBackend:
             log.warning(f'MagicLink with token "{token}" not found')
             return
 
-        if magiclink.disabled:
-            log.warning(f'MagicLink "{magiclink.pk}" is disabled')
+        if not magiclink.is_active:
+            log.warning(f'MagicLink "{magiclink.pk}" is not active')
             return
 
         try:

@@ -40,7 +40,7 @@ def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '', lim
     if over_limit:
         raise MagicLinkError('Too many magic login requests')
 
-    MagicLink.objects.filter(email=email, disabled=False).update(disabled=True)
+    MagicLink.objects.filter(email=email, is_active=True).update(is_active=False)
 
     if not redirect_url:
         redirect_url = get_url_path(settings.LOGIN_REDIRECT_URL)
@@ -52,7 +52,7 @@ def create_magiclink(*, email: str, ip_address: str, redirect_url: str = '', lim
 
 
 def disable_magiclink(*, pk: int) -> None:
-    MagicLink.objects.filter(pk=pk).update(disabled=True)
+    MagicLink.objects.filter(pk=pk).update(is_active=False)
 
 
 def validate_magiclink(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
@@ -66,7 +66,7 @@ def validate_magiclink(*, ml: 'MagicLink', email: str = '') -> AbstractUser:
         disable_magiclink(pk=ml.pk)
         raise MagicLinkError('Magic link has expired')
 
-    if ml.disabled:
+    if not ml.is_active:
         raise MagicLinkError('Magic link has been used')
 
     user = User.objects.get(email=ml.email)

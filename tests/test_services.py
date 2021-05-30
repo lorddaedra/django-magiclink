@@ -60,13 +60,13 @@ def test_create_magiclink_one_token_per_user(settings, freezer):
     request = HttpRequest()
     freezer.move_to('2000-01-01T00:00:00')
     magic_link = create_magiclink(email=email, ip_address=get_client_ip(request))  # NOQA: F811
-    assert magic_link.disabled is False
+    assert magic_link.is_active is True
 
     freezer.move_to('2000-01-01T00:00:31')
     create_magiclink(email=email, ip_address=get_client_ip(request))
 
     magic_link = MagicLink.objects.get(token=magic_link.token)  # NOQA: F811
-    assert magic_link.disabled is True
+    assert magic_link.is_active is False
     assert magic_link.email == email
 
 
@@ -136,14 +136,14 @@ def test_validate_expired(user, magic_link):  # NOQA: F811
     error.match('Magic link has expired')
 
     ml = MagicLink.objects.get(token=ml.token)
-    assert ml.disabled is True
+    assert ml.is_active is False
 
 
 @pytest.mark.django_db
 def test_validate_used(user, magic_link):  # NOQA: F811
     request = HttpRequest()
     ml = magic_link(request)
-    ml.disabled = True
+    ml.is_active = False
     ml.save()
     with pytest.raises(MagicLinkError) as error:
         validate_magiclink(ml=ml, email=user.email)
