@@ -10,7 +10,8 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 
-from magiclink.models import MagicLink, MagicLinkError
+from magiclink.exceptions import MagicLinkError
+from magiclink.models import MagicLink
 from magiclink.services import create_magiclink, create_user, generate_url, send_magiclink, validate_magiclink
 from magiclink.utils import get_client_ip
 

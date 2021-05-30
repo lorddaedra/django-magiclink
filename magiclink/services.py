@@ -15,7 +15,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 
-from magiclink.models import MagicLink, MagicLinkError
+from magiclink.exceptions import MagicLinkError
+from magiclink.models import MagicLink
 from magiclink.utils import get_url_path
 
 logger = logging.getLogger(__name__)

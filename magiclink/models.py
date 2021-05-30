@@ -3,10 +3,6 @@ from __future__ import annotations
 from django.db import models
 
 
-class MagicLinkError(Exception):
-    pass
-
-
 class MagicLink(models.Model):
     email = models.EmailField()
     token = models.TextField()

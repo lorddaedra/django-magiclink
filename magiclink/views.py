@@ -16,8 +16,9 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 
 from . import settings as ml_settings
+from .exceptions import MagicLinkError
 from .forms import LoginForm, SignupForm
-from .models import MagicLink, MagicLinkError
+from .models import MagicLink
 from .services import create_magiclink, create_user, send_magiclink, validate_magiclink
 from .utils import get_client_ip, get_url_path
 

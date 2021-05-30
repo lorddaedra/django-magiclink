@@ -5,7 +5,8 @@ import logging
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 
-from .models import MagicLink, MagicLinkError
+from .exceptions import MagicLinkError
+from .models import MagicLink
 from .services import disable_magiclink, validate_magiclink
 
 User = get_user_model()
