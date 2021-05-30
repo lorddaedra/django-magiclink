@@ -24,7 +24,7 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'autofocus': 'autofocus', 'placeholder': 'Enter your email'}))
 
     def clean_email(self) -> str:
         email = self.cleaned_data['email'].lower()

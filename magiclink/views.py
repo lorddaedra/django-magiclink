@@ -69,7 +69,15 @@ class LoginView(TemplateView):
 
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        return HttpResponseRedirect(get_url_path(self.next_page))
+        success_url: str = get_url_path(self.next_page)
+
+        if request.META.get("HTTP_HX_REQUEST") != 'true':
+            return HttpResponseRedirect(success_url)
+
+        # htmx request
+        response: HttpResponse = HttpResponse()
+        response.headers['HX-Redirect'] = success_url
+        return response
 
 
 class LoginSentView(TemplateView):
@@ -150,7 +158,15 @@ class SignupView(TemplateView):
                                      limit_seconds=self.limit_seconds, expiry_seconds=self.expiry_seconds)
         send_magiclink(ml=magiclink, domain=str(get_current_site(request).domain), subject=self.subject, style=self.style)
 
-        return HttpResponseRedirect(get_url_path(self.next_page))
+        success_url: str = get_url_path(self.next_page)
+
+        if request.META.get("HTTP_HX_REQUEST") != 'true':
+            return HttpResponseRedirect(success_url)
+
+        # htmx request
+        response: HttpResponse = HttpResponse()
+        response.headers['HX-Redirect'] = success_url
+        return response
 
 
 class LogoutView(View):
