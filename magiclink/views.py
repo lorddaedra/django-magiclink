@@ -4,6 +4,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -24,7 +25,7 @@ User = get_user_model()
 log = logging.getLogger(__name__)
 
 
-@method_decorator((sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
+@method_decorator((user_passes_test(lambda u: not u.is_authenticated, login_url='/'), sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
 class LoginView(TemplateView):
     form = LoginForm
     limit_seconds = 3
@@ -46,7 +47,6 @@ class LoginView(TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        logout(request)
         context = self.get_context_data(**kwargs)
         form = self.form(request.POST)
         if not form.is_valid():
@@ -76,7 +76,7 @@ class LoginSentView(TemplateView):
     template_name: str = 'magiclink/login_sent.html'
 
 
-@method_decorator(never_cache, name='dispatch')
+@method_decorator((user_passes_test(lambda u: not u.is_authenticated, login_url='/'), never_cache), name='dispatch')
 class LoginVerifyView(TemplateView):
     template_name: str = 'magiclink/login_failed.html'
 
@@ -109,7 +109,7 @@ class LoginVerifyView(TemplateView):
         return HttpResponseRedirect(magiclink.redirect_url)
 
 
-@method_decorator((sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
+@method_decorator((user_passes_test(lambda u: not u.is_authenticated, login_url='/'), sensitive_post_parameters(), csrf_protect, never_cache), name='dispatch')
 class SignupView(TemplateView):
     form = SignupForm
     limit_seconds = 3
@@ -131,7 +131,6 @@ class SignupView(TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        logout(request)
         context = self.get_context_data(**kwargs)
 
         form = self.form(request.POST)
