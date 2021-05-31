@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
+from django.core import signing
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -17,6 +18,7 @@ from django.utils import timezone
 
 from magiclink.exceptions import MagicLinkError
 from magiclink.models import MagicLink
+from magiclink.settings import REGISTRATION_SALT
 from magiclink.utils import get_url_path
 
 logger = logging.getLogger(__name__)
@@ -108,7 +110,8 @@ def send_magiclink(*, ml: 'MagicLink', domain: str, subject: str,
 def generate_url(*, token: str, email: str, domain: str) -> str:
     url_path = reverse("magiclink:login_verify")
 
-    params = {'token': token, 'email': email}
+    signed_token: str = signing.dumps(obj={'token': token, 'email': email}, salt=REGISTRATION_SALT)
+    params = {'token': signed_token}
     query = urlencode(params)
 
     url_path = f'{url_path}?{query}'

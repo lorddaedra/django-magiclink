@@ -6,10 +6,12 @@ from urllib.parse import urlencode
 import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import signing
 from django.http import HttpRequest
 from django.urls import reverse
 
 from magiclink.services import generate_url
+from magiclink.settings import REGISTRATION_SALT
 
 from .fixtures import magic_link, user  # NOQA: F401
 
@@ -24,8 +26,8 @@ def test_login_verify(client, settings, user, magic_link):  # NOQA: F811
     ml.ip_address = '127.0.0.1'  # This is a little hacky
     ml.save()
 
-    params = {'token': ml.token}
-    params['email'] = ml.email
+    signed_token: str = signing.dumps(obj={'token': ml.token, 'email': ml.email}, salt=REGISTRATION_SALT)
+    params = {'token': signed_token}
     query = urlencode(params)
     url = f'{url}?{query}'
 
@@ -62,6 +64,12 @@ def test_login_verify_failed(client, settings):
     reload(mlsettings)
 
     url = reverse('magiclink:login_verify')
+
+    signed_token: str = signing.dumps(obj={'token': '', 'email': ''}, salt=REGISTRATION_SALT)
+    params = {'token': signed_token}
+    query = urlencode(params)
+    url = f'{url}?{query}'
+
     response = client.get(url)
     assert response.status_code == 200
     context = response.context_data

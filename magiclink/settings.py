@@ -8,3 +8,5 @@ from django.conf import settings
 LOGIN_SENT_REDIRECT = getattr(settings, 'MAGICLINK_LOGIN_SENT_REDIRECT', 'magiclink:login_sent')
 
 SIGNUP_LOGIN_REDIRECT = getattr(settings, 'MAGICLINK_SIGNUP_LOGIN_REDIRECT', '')
+
+REGISTRATION_SALT = getattr(settings, 'MAGICLINK_REGISTRATION_SALT', 'magiclinks')

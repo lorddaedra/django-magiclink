@@ -174,6 +174,9 @@ MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
 
 # Change the url a user is redirect to after requesting a magic link
 MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
+
+# Salt used for token signing
+MAGICLINK_REGISTRATION_SALT = 'magiclinks'
 ```
 
 

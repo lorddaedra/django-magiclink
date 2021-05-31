@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from urllib.parse import quote
+from urllib.parse import urlencode
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import signing
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +14,7 @@ from django.utils import timezone
 from magiclink.exceptions import MagicLinkError
 from magiclink.models import MagicLink
 from magiclink.services import create_magiclink, create_user, generate_url, send_magiclink, validate_magiclink
+from magiclink.settings import REGISTRATION_SALT
 from magiclink.utils import get_client_ip
 
 from .fixtures import magic_link, user  # NOQA: F401
@@ -202,5 +204,8 @@ def test_generate_url(magic_link):  # NOQA: F811
     request.META['SERVER_NAME'] = host
     request.META['SERVER_PORT'] = 80
     ml = magic_link(request)
-    url = f'https://{host}{login_url}?token={ml.token}&email={quote(ml.email)}'
+    signed_token: str = signing.dumps(obj={'token': ml.token, 'email': ml.email}, salt=REGISTRATION_SALT)
+    params = {'token': signed_token}
+    query = urlencode(params)
+    url = f'https://{host}{login_url}?{query}'
     assert generate_url(token=ml.token, email=ml.email, domain=get_current_site(request).domain) == url

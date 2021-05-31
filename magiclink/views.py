@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import signing
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -20,6 +21,7 @@ from .exceptions import MagicLinkError
 from .forms import LoginForm, SignupForm
 from .models import MagicLink
 from .services import create_magiclink, create_user, send_magiclink, validate_magiclink
+from .settings import REGISTRATION_SALT
 from .utils import get_client_ip, get_url_path
 
 User = get_user_model()
@@ -87,14 +89,30 @@ class LoginSentView(TemplateView):
 
 @method_decorator((user_passes_test(lambda u: not u.is_authenticated, login_url='/'), never_cache), name='dispatch')
 class LoginVerifyView(TemplateView):
+    expiry_seconds = 900
     template_name: str = 'magiclink/login_failed.html'
 
     def get(self, request, *args, **kwargs):
-        token = request.GET.get('token', '')
-        email = request.GET.get('email', '')
+        signed_token = request.GET.get('token', '')
+
+        context = self.get_context_data(**kwargs)
+
+        try:
+            token_data: dict[str, str] = signing.loads(signed_token, salt=REGISTRATION_SALT, max_age=self.expiry_seconds)
+        except signing.SignatureExpired:
+            error = 'Magic link has expired'
+            context['login_error'] = error
+            return self.render_to_response(context)
+        except signing.BadSignature:
+            error = 'Email address does not match'
+            context['login_error'] = error
+            return self.render_to_response(context)
+        else:
+            email: str = token_data['email']
+            token: str = token_data['token']
+
         user = authenticate(request, token=token, email=email)
         if not user:
-            context = self.get_context_data(**kwargs)
 
             try:
                 magiclink = MagicLink.objects.get(token=token)
