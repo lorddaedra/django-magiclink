@@ -1,24 +1,13 @@
 from __future__ import annotations
 
-from django.http import HttpRequest
+from uuid import UUID
 
-from magiclink.utils import get_client_ip, get_url_path
-
-
-def test_get_client_ip_http_x_forwarded_for():
-    request = HttpRequest()
-    ip_addr = '127.0.0.1'
-    request.META['HTTP_X_FORWARDED_FOR'] = f'{ip_addr}, 127.0.0.1'
-    ip_address = get_client_ip(request)
-    assert ip_address == ip_addr
+from magiclinks.utils import generate_timeflake, get_url_path
 
 
-def test_get_client_ip_remote_addr():
-    request = HttpRequest()
-    remote_addr = '127.0.0.1'
-    request.META['REMOTE_ADDR'] = remote_addr
-    ip_address = get_client_ip(request)
-    assert ip_address == remote_addr
+def test_generate_timeflake():
+    assert isinstance(generate_timeflake(), UUID)
+    assert generate_timeflake() != generate_timeflake()
 
 
 def test_get_url_path_with_name():

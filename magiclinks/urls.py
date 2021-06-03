@@ -4,7 +4,7 @@ from django.urls import path
 
 from .views import LoginSentView, LoginVerifyView, LoginView, LogoutView, SignupView
 
-app_name = "magiclink"
+app_name = "magiclinks"
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),

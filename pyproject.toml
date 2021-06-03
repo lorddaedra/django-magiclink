@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "django-magiclink"
+name = "django-magiclinks"
 packages = [
-    {include = "magiclink"}
+    {include = "magiclinks"}
 ]
-version = "1.0.1"
+version = "2.0"
 description = "Passwordless authentication for Django with Magic Links"
-authors = ["Matt Pye <pyematt@gmail.com>"]
+authors = ["Alexander Ovchinnikov <alexander@entropia.us>"]
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/lorddaedra/django-magiclink"
@@ -15,6 +15,7 @@ keywords = ["magic link", "authentication", "passwordless"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Django = ">=3.2"
+timeflake = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
@@ -26,7 +27,6 @@ pytest-cov = "^2.10.0"
 pytest-django = "^4.3.0"
 pytest-mock = "^3.2.0"
 pytest-freezegun = "^0.4.1"
-timeflake = "^0.4.0"
 
 [tool.isort]
 line_length = 160

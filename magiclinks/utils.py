@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from django.http import HttpRequest
+from uuid import UUID
+
+import timeflake
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 
 
-def get_client_ip(request: HttpRequest) -> str:
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+def generate_timeflake() -> UUID:
+    """Generate UUID for models uid fields."""
+    return timeflake.random().uuid
 
 
 def get_url_path(url: str) -> str:

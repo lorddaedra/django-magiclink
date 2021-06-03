@@ -4,14 +4,21 @@ from importlib import reload
 
 
 def test_login_sent_redirect(settings):
-    settings.MAGICLINK_LOGIN_SENT_REDIRECT = '/sent'
-    from magiclink import settings as mlsettings
+    settings.MAGICLINKS_LOGIN_SENT_REDIRECT_URL = '/sent'
+    from magiclinks import settings as mlsettings
     reload(mlsettings)
-    assert mlsettings.LOGIN_SENT_REDIRECT == settings.MAGICLINK_LOGIN_SENT_REDIRECT  # NOQA: E501
+    assert mlsettings.LOGIN_SENT_REDIRECT_URL == settings.MAGICLINKS_LOGIN_SENT_REDIRECT_URL  # NOQA: E501
 
 
 def test_signup_login_redirect(settings):
-    settings.MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/loggedin'
-    from magiclink import settings as mlsettings
+    settings.MAGICLINKS_SIGNUP_LOGIN_REDIRECT_URL = '/loggedin'
+    from magiclinks import settings as mlsettings
     reload(mlsettings)
-    assert mlsettings.SIGNUP_LOGIN_REDIRECT == settings.MAGICLINK_SIGNUP_LOGIN_REDIRECT  # NOQA: E501
+    assert mlsettings.SIGNUP_LOGIN_REDIRECT_URL == settings.MAGICLINKS_SIGNUP_LOGIN_REDIRECT_URL  # NOQA: E501
+
+
+def test_registration_salt(settings):
+    settings.MAGICLINKS_REGISTRATION_SALT = 'magiclinkssalt'
+    from magiclinks import settings as mlsettings
+    reload(mlsettings)
+    assert mlsettings.REGISTRATION_SALT == settings.MAGICLINKS_REGISTRATION_SALT  # NOQA: E501

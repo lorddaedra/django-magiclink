@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-SECRET_KEY = 'magiclink-test'
+SECRET_KEY = 'magiclinks-test'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ALLOWED_HOSTS = '*'
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tests',
-    'magiclink',
+    'magiclinks',
 ]
 
 MIDDLEWARE = [
@@ -54,14 +54,14 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'magiclink.backends.MagicLinkBackend',
+    'magiclinks.backends.MagicLinksBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
 AUTH_USER_MODEL = 'tests.User'
-LOGIN_URL = 'magiclink:login'
+LOGIN_URL = 'magiclinks:login'
 LOGIN_REDIRECT_URL = 'needs_login'
 LOGOUT_REDIRECT_URL = 'no_login'
-MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
-MAGICLINK_SIGNUP_LOGIN_REDIRECT = 'no_login'
-MAGICLINK_REGISTRATION_SALT = 'magiclinks'
+MAGICLINKS_LOGIN_SENT_REDIRECT_URL = 'magiclinks:login_sent'
+MAGICLINKS_SIGNUP_LOGIN_REDIRECT_URL = 'no_login'
+MAGICLINKS_REGISTRATION_SALT = 'magiclinks'

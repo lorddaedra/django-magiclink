@@ -1,9 +1,9 @@
-# Django MagicLink
+# Django MagicLinks
 
 
 Passwordless Authentication for Django with Magic Links.
 
-This package was created with a focus on [ease of setup](#steps-to-impliment), [security](#security) and testing (coverage is currently at 100%). The idea is to use sane defaults to quickly create secure single-use token authentication for Django.
+This package was created with a focus on [ease of setup](#steps-to-impliment), [security](#security) and testing. The idea is to use sane defaults to quickly create secure single-use token authentication for Django.
 
 ![](example.gif)
 
@@ -11,7 +11,7 @@ This package was created with a focus on [ease of setup](#steps-to-impliment), [
 ## Install
 
 ```bash
-pip install django-magiclink
+pip install django-magiclinks
 ```
 
 
@@ -47,7 +47,7 @@ Add to the `urlpatterns` in `urls.py`:
 ```python
 urlpatterns = [
     ...
-    path('auth/', include('magiclink.urls', namespace='magiclink')),
+    path('accounts/', include('magiclinks.urls', namespace='magiclinks')),
     ...
 ]
 ```
@@ -56,25 +56,25 @@ Add `magiclink` to your `INSTALLED_APPS`:
 ```python
 INSTALLED_APPS = (
     ...
-    'magiclink',
+    'magiclinks',
     ...
 )
 ```
 
 ```python
 AUTHENTICATION_BACKENDS = (
-    'magiclink.backends.MagicLinkBackend',
+    'magiclinks.backends.MagicLinksBackend',
     ...
     'django.contrib.auth.backends.ModelBackend',
 )
 ```
-*Note: MagicLinkBackend should be placed at the top of AUTHENTICATION_BACKENDS* to ensure it is used as the primary login backend.
+*Note: MagicLinksBackend should be placed at the top of AUTHENTICATION_BACKENDS* to ensure it is used as the primary login backend.
 
 
 Add the following settings to your `settings.py` (you will need to replace the template names in the below steps):
 ```python
-# Set Djangos login URL to the magiclink login page
-LOGIN_URL = 'magiclink:login'
+# Set Djangos login URL to the magiclinks login page
+LOGIN_URL = 'magiclinks:login'
 ```
 
 See [additional configuration settings](#configuration-settings) for all of the different available settings.
@@ -85,7 +85,7 @@ See [additional configuration settings](#configuration-settings) for all of the 
 When overriding this template please ensure the following code is included:
 
 ```html
-<form action="{% url 'magiclink:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post">
+<form action="{% url 'magiclinks:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post">
     {% csrf_token %}
     {{ login_form }}
     <button type='submit'>Send login email</button>
@@ -129,9 +129,6 @@ If this email template is not to your liking you can override the email template
 * `{{ subject }}` - The subject of the email "Your login magic link"
 * `{{ magiclink }}` - The magic link URL
 * `{{ user }}` - The full user object
-* `{{ expiry }}` - Datetime for when the magiclink expires
-* `{{ ip_address }}` - The IP address of the person who requested the magic link
-* `{{ date_created }}` - Datetime of when the magic link was created
 
 
 #### Signup page
@@ -144,12 +141,12 @@ Check `tests/models.py` and `magiclink/services.py`. Use custom view if you need
 When overriding this template please ensure the following content is included:
 
 ```html
-<form action="{% url 'magiclink:signup' %}" method="post">
+<form action="{% url 'magiclinks:signup' %}" method="post">
     {% csrf_token %}
     {{ signup_form }}
     <button type='submit'>Signup</button>
 </form>
-<p>Already have an account? <a href='{% url 'magiclink:login' %}'>Log in here</a></p>
+<p>Already have an account? <a href='{% url 'magiclinks:login' %}'>Log in here</a></p>
 ```
 
 Like the login for the sign up flow can be overridden if you require more information from the user on signup. See the login/setup docs for more details.
@@ -170,13 +167,13 @@ LOGIN_REDIRECT_URL = '/accounts/profile/'
 # If a new user is created via the signup page use this setting to send them to
 # a different url than LOGIN_REDIRECT_URL when clicking the magic link
 # This will fall back to LOGIN_REDIRECT_URL
-MAGICLINK_SIGNUP_LOGIN_REDIRECT = '/welcome/'
+MAGICLINKS_SIGNUP_LOGIN_REDIRECT_URL = '/welcome/'
 
 # Change the url a user is redirect to after requesting a magic link
-MAGICLINK_LOGIN_SENT_REDIRECT = 'magiclink:login_sent'
+MAGICLINKS_LOGIN_SENT_REDIRECT_URL = 'magiclinks:login_sent'
 
 # Salt used for token signing
-MAGICLINK_REGISTRATION_SALT = 'magiclinks'
+MAGICLINKS_REGISTRATION_SALT = 'magiclinks'
 ```
 
 
@@ -195,22 +192,4 @@ Using magic links can be dangerous as poorly implemented login links can be brut
 
 ## Manual usage
 
-django-magiclink uses a model to help create, send and validate magic links. A `create_magiclink` helper function can be used easily create a MagicLink using the correct settings:
-
-```python
-
-from django.contrib.sites.shortcuts import get_current_site
-from magiclink.services import create_magiclink, generate_url, send_magiclink
-from magiclink.utils import get_client_ip
-
-
-# Returns newly created from magiclink.models.MagicLink instance
-magiclink = create_magiclink(email=email, ip_address=get_client_ip(request), redirect_url='')
-
-# Generates the magic link url and sends it in an email
-send_magiclink(ml=magiclink, domain=get_current_site(request).domain, subject='Your login magic link')
-
-# If you want to build the magic link from the model instance but don't want to
-#  send the email you can you can use:
-magic_link_url = generate_url(token=magiclink.token, email=magiclink.email, domain=get_current_site(request).domain)
-```
+Check `services.py` module.

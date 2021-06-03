@@ -1,70 +1,66 @@
 from __future__ import annotations
 
+from urllib.parse import unquote_plus
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.core import signing
 from django.http import HttpRequest
 
-from magiclink.backends import MagicLinkBackend
-from magiclink.models import MagicLink
+from magiclinks.backends import MagicLinksBackend
+from magiclinks.models import MagicLink
+from magiclinks.settings import REGISTRATION_SALT
 
 from .fixtures import magic_link, user  # NOQA: F401
 
-
-@pytest.mark.django_db
-def test_auth_backend_get_user(user):  # NOQA: F811
-    assert MagicLinkBackend().get_user(user.id)
-
-
-@pytest.mark.django_db
-def test_auth_backend_get_user_do_not_exist(user):  # NOQA: F811
-    assert MagicLinkBackend().get_user(123456) is None
+User = get_user_model()
 
 
 @pytest.mark.django_db
 def test_auth_backend(user, magic_link):  # NOQA: F811
     request = HttpRequest()
-    ml = magic_link(request)
-    user = MagicLinkBackend().authenticate(
-        request=request, token=ml.token, email=user.email
-    )
+    token = unquote_plus(magic_link(request).split('=')[1])
+    user = MagicLinksBackend().authenticate(request=request, token=token)
     assert user
-    ml = MagicLink.objects.get(token=ml.token)
-    assert ml.is_active is False
+    ml = MagicLink.objects.filter(pk=signing.loads(token, salt=REGISTRATION_SALT)['pk']).first()
+    assert ml is None
 
 
 @pytest.mark.django_db
 def test_auth_backend_no_token(user, magic_link):  # NOQA: F811
     request = HttpRequest()
-    user = MagicLinkBackend().authenticate(
-        request=request, token='fake', email=user.email
-    )
+    user = MagicLinksBackend().authenticate(request=request, token='')
     assert user is None
 
 
 @pytest.mark.django_db
-def test_auth_backend_disabled_token(user, magic_link):  # NOQA: F811
+def test_auth_backend_fake_token(user, magic_link):  # NOQA: F811
     request = HttpRequest()
-    ml = magic_link(request)
-    ml.is_active = False
-    ml.save()
-    user = MagicLinkBackend().authenticate(
-        request=request, token=ml.token, email=user.email
-    )
+    user = MagicLinksBackend().authenticate(request=request, token='fake')
     assert user is None
 
 
 @pytest.mark.django_db
-def test_auth_backend_no_email(user, magic_link):  # NOQA: F811
+def test_auth_backend_expired_token(user, magic_link):  # NOQA: F811
     request = HttpRequest()
-    ml = magic_link(request)
-    user = MagicLinkBackend().authenticate(request=request, token=ml.token)
+    token = unquote_plus(magic_link(request).split('=')[1])
+    user = MagicLinksBackend().authenticate(request=request, token=token, expiry_seconds=0)
+    assert user is None
+
+
+@pytest.mark.django_db
+def test_auth_backend_no_database_record(user, magic_link):  # NOQA: F811
+    request = HttpRequest()
+    token = unquote_plus(magic_link(request).split('=')[1])
+    MagicLink.objects.all().delete()
+    user = MagicLinksBackend().authenticate(request=request, token=token)
     assert user is None
 
 
 @pytest.mark.django_db
 def test_auth_backend_invalid(user, magic_link):  # NOQA: F811
     request = HttpRequest()
-    ml = magic_link(request)
-    user = MagicLinkBackend().authenticate(
-        request=request, token=ml.token, email='fake@email.com'
-    )
+    token = unquote_plus(magic_link(request).split('=')[1])
+    User.objects.all().delete()
+    user = MagicLinksBackend().authenticate(request=request, token=token)
     assert user is None

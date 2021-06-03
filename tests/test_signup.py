@@ -2,33 +2,32 @@ from __future__ import annotations
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.urls import reverse
 
-from magiclink import services
-from magiclink.models import MagicLink
+from magiclinks.models import MagicLink
 
 User = get_user_model()
 
 
 @pytest.mark.django_db
 def test_signup_end_to_end(mocker, settings, client):
-    from magiclink import settings as mlsettings
-    spy = mocker.spy(services, 'generate_url')
-
-    login_url = reverse('magiclink:signup')
+    from magiclinks import settings as mlsettings
+    login_url = reverse('magiclinks:signup')
     email = 'test@example.com'
     data = {
         'email': email,
     }
     client.post(login_url, data, follow=True)
-    verify_url = spy.spy_return
+    first_message = mail.outbox[0]
+    verify_url = first_message.body.split('\n')[2]
     response = client.get(verify_url, follow=True)
     assert response.status_code == 200
-    signup_redirect_page = reverse(mlsettings.SIGNUP_LOGIN_REDIRECT)
+    signup_redirect_page = reverse(mlsettings.SIGNUP_LOGIN_REDIRECT_URL)
     assert response.request['PATH_INFO'] == signup_redirect_page
     User.objects.get(email=email)
 
-    url = reverse('magiclink:logout')
+    url = reverse('magiclinks:logout')
     response = client.get(url, follow=True)
     assert response.status_code == 200
     assert response.request['PATH_INFO'] == reverse('no_login')
@@ -36,11 +35,11 @@ def test_signup_end_to_end(mocker, settings, client):
     url = reverse('needs_login')
     response = client.get(url, follow=True)
     assert response.status_code == 200
-    assert response.request['PATH_INFO'] == reverse('magiclink:login')
+    assert response.request['PATH_INFO'] == reverse('magiclinks:login')
 
 
 def test_signup_get(client):
-    url = reverse('magiclink:signup')
+    url = reverse('magiclinks:signup')
     response = client.get(url)
     assert response.context_data['signup_form']
     assert response.status_code == 200
@@ -48,9 +47,9 @@ def test_signup_get(client):
 
 @pytest.mark.django_db
 def test_signup_post(mocker, client, settings):  # NOQA: F811
-    send_mail = mocker.patch('magiclink.services.send_mail')
+    send_mail = mocker.patch('magiclinks.services.send_mail')
 
-    url = reverse('magiclink:signup')
+    url = reverse('magiclinks:signup')
     email = 'test@example.com'
     data = {
         'email': email,
@@ -58,7 +57,7 @@ def test_signup_post(mocker, client, settings):  # NOQA: F811
     }
     response = client.post(url, data)
     assert response.status_code == 302
-    assert response.url == reverse('magiclink:login_sent')
+    assert response.url == reverse('magiclinks:login_sent')
 
     usr = User.objects.get(email=email)
     assert usr
@@ -78,7 +77,7 @@ def test_signup_post(mocker, client, settings):  # NOQA: F811
 def test_signup_form_user_exists(mocker, client):
     email = 'test@example.com'
     User.objects.create(email=email)
-    url = reverse('magiclink:signup')
+    url = reverse('magiclinks:signup')
 
     data = {
         'email': email,
@@ -93,7 +92,7 @@ def test_signup_form_user_exists(mocker, client):
 def test_signup_form_user_exists_inactive(mocker, client):
     email = 'test@example.com'
     User.objects.create(email=email, is_active=False)
-    url = reverse('magiclink:signup')
+    url = reverse('magiclinks:signup')
 
     data = {
         'email': email,
@@ -106,11 +105,11 @@ def test_signup_form_user_exists_inactive(mocker, client):
 
 @pytest.mark.django_db
 def test_signup_form_email_only(mocker, client):
-    url = reverse('magiclink:signup')
+    url = reverse('magiclinks:signup')
     email = 'test@example.com'
     data = {
         'email': email,
     }
     response = client.post(url, data)
     assert response.status_code == 302
-    assert response.url == reverse('magiclink:login_sent')
+    assert response.url == reverse('magiclinks:login_sent')

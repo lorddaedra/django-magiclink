@@ -3,8 +3,7 @@ from __future__ import annotations
 import pytest
 from django.contrib.auth import get_user_model
 
-from magiclink.services import create_magiclink, create_user
-from magiclink.utils import get_client_ip
+from magiclinks.services import create_magiclink, create_user
 
 User = get_user_model()
 
@@ -19,6 +18,6 @@ def user():
 def magic_link(user):
 
     def _create(request):
-        return create_magiclink(email=user.email, ip_address=get_client_ip(request), redirect_url='')
+        return create_magiclink(email=user.email, domain='127.0.0.1:8000', url_name='magiclinks:login_verify', next_url='', limit_seconds=3)
 
     return _create

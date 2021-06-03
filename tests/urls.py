@@ -17,5 +17,5 @@ def no_login(request):
 urlpatterns = [
     path('no-login/', no_login, name='no_login'),
     path('needs-login/', needs_login, name='needs_login'),
-    path('auth/', include('magiclink.urls', namespace='magiclink')),
+    path('accounts/', include('magiclinks.urls', namespace='magiclinks')),
 ]

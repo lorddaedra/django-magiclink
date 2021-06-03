@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Django MagicLink Login - Please override this template</title>
+  <title>Django MagicLink Sign up - Please override this template</title>
   <meta name="description" content="Django MagicLink">
   <meta name="author" content="Django MagicLink">
   <style type="text/css">
@@ -15,13 +15,13 @@
 </head>
 
 <body>
-  <h1>Login via email</h1>
-  <form action="{% url 'magiclink:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post">
+  <h1>Create an account</h1>
+  <form action="{% url 'magiclinks:signup' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post">
     {% csrf_token %}
-    {{ login_form }}
-    <button type="submit">Send login email</button>
+    {{ signup_form }}
+    <button type="submit">Sign up</button>
   </form>
-  <p>Don't have an account? <a href="{% url 'magiclink:signup' %}">Sign up here</a></p>
+  <p>Already have an account? <a href="{% url 'magiclinks:login' %}">Log in here</a></p>
 
   <p>Please see the <a href="https://github.com/lorddaedra/django-magiclink">README on Github</a> for more details on setting up django-magiclink correctly</p>
 </body>
