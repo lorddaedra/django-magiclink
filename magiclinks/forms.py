@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django_registration.validators import HTML5EmailValidator, validate_confusables_email
 
 User = get_user_model()
 
@@ -11,6 +12,8 @@ class LoginForm(forms.Form):
 
     def clean_email(self) -> str:
         email = self.cleaned_data['email'].lower()
+        HTML5EmailValidator()(email)
+        validate_confusables_email(email)
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
@@ -28,6 +31,8 @@ class SignupForm(forms.Form):
 
     def clean_email(self) -> str:
         email = self.cleaned_data['email'].lower()
+        HTML5EmailValidator()(email)
+        validate_confusables_email(email)
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:

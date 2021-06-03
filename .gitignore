@@ -21,6 +21,7 @@ Temporary Items
 .apdisk
 
 # Editors
+.idea/
 .vscode/
 
 ### Python ###
