@@ -33,7 +33,7 @@ pytest-freezegun = "^0.4.1"
 line_length = 160
 multi_line_output = 5
 known_third_party = "pytest"
-known_first_party = "magiclink"
+known_first_party = "magiclinks"
 skip_glob = "__pycache__/*,venv/*,.venv/*,.tox/*,.mypy_cache"
 
 [build-system]
