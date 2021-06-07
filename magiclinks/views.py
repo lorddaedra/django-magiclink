@@ -37,13 +37,6 @@ class LoginView(TemplateView):
     template_name: str = 'magiclinks/login.html'
     login_verify_url_name: str = 'magiclinks:login_verify'
     email_templates: tuple[str, str] = ('magiclinks/login_email.txt', 'magiclinks/login_email.html')
-    style: dict[str, str] = {
-        'logo_url': '',
-        'background_color': '#ffffff',
-        'main_text_color': '#000000',
-        'button_background_color': '#0078be',
-        'button_text_color': '#ffffff',
-    }
     next_page: str = LOGIN_SENT_REDIRECT_URL
 
     def get(self, request, *args, **kwargs):
@@ -72,7 +65,7 @@ class LoginView(TemplateView):
             context['login_form'] = form
             return self.render_to_response(context)
 
-        send_magiclink(email=email, magiclink=magiclink, subject=self.subject, email_templates=self.email_templates, style=self.style)
+        send_magiclink(email=email, magiclink=magiclink, subject=self.subject, email_templates=self.email_templates)
 
         success_url: str = get_url_path(self.next_page)
 
@@ -122,13 +115,6 @@ class SignupView(TemplateView):
     template_name: str = 'magiclinks/signup.html'
     login_verify_url_name: str = 'magiclinks:login_verify'
     email_templates: tuple[str, str] = ('magiclinks/login_email.txt', 'magiclinks/login_email.html')
-    style: dict[str, str] = {
-        'logo_url': '',
-        'background_color': '#ffffff',
-        'main_text_color': '#000000',
-        'button_background_color': '#0078be',
-        'button_text_color': '#ffffff',
-    }
     next_page: str = LOGIN_SENT_REDIRECT_URL
 
     def get(self, request, *args, **kwargs):
@@ -155,7 +141,7 @@ class SignupView(TemplateView):
 
         magiclink = create_magiclink(email=email, domain=str(get_current_site(request).domain), url_name=self.login_verify_url_name, next_url=next_url,
                                      limit_seconds=self.limit_seconds)
-        send_magiclink(email=email, magiclink=magiclink, subject=self.subject, email_templates=self.email_templates, style=self.style)
+        send_magiclink(email=email, magiclink=magiclink, subject=self.subject, email_templates=self.email_templates)
 
         success_url: str = get_url_path(self.next_page)
 

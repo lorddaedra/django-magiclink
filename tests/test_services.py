@@ -59,14 +59,7 @@ def test_send_email(mocker, settings, user, magic_link):  # NOQA: F811
     request.META['SERVER_PORT'] = 80
     magiclink = magic_link(request)
 
-    style: dict[str, str] = {
-        'logo_url': '',
-        'background_color': '#ffffff',
-        'main_text_color': '#000000',
-        'button_background_color': '#0078be',
-        'button_text_color': '#ffffff',
-    }
-    send_magiclink(email=user.email, magiclink=magiclink, subject='Your login magic link', style=style)
+    send_magiclink(email=user.email, magiclink=magiclink, subject='Your login magic link')
 
     # context = {
     #     'subject': 'Your login magic link',

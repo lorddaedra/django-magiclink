@@ -61,8 +61,7 @@ def delete_magiclink(*, pk: Optional[Union[str, UUID]] = None, email: Optional[s
 
 
 def send_magiclink(*, email: str, magiclink: str, subject: str,
-                   email_templates: tuple[str, str] = ('magiclinks/login_email.txt', 'magiclinks/login_email.html'),
-                   style: Optional[dict[str, str]] = None) -> None:
+                   email_templates: tuple[str, str] = ('magiclinks/login_email.txt', 'magiclinks/login_email.html')) -> None:
     """Send magiclink to E-mail."""
     logger.info('Sending magiclink')
     user: Optional[AbstractUser] = User.objects.filter(email=email, is_active=True).first()
@@ -73,7 +72,7 @@ def send_magiclink(*, email: str, magiclink: str, subject: str,
         'subject': subject,
         'user': user,
         'magiclink': magiclink,
-        'style': style if style else {
+        'style': {
             'logo_url': '',
             'background_color': '#ffffff',
             'main_text_color': '#000000',
