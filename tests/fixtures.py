@@ -3,15 +3,14 @@ from __future__ import annotations
 import pytest
 from django.contrib.auth import get_user_model
 
-from magiclinks.services import create_magiclink, create_user
+from magiclinks.services import create_magiclink
 
 User = get_user_model()
 
 
 @pytest.fixture()
 def user():
-    create_user(email='test@example.com')
-    return User.objects.latest()
+    return User.objects.create_user(username='testuser', email='test@example.com')
 
 
 @pytest.fixture()

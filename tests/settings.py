@@ -58,6 +58,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+
+def create_user(*, email: str):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    return User.objects.create_user(username=email, email=email)
+
+
 AUTH_USER_MODEL = 'tests.User'
 LOGIN_URL = 'magiclinks:login'
 LOGIN_REDIRECT_URL = 'needs_login'
@@ -65,3 +72,4 @@ LOGOUT_REDIRECT_URL = 'no_login'
 MAGICLINKS_LOGIN_SENT_REDIRECT_URL = 'magiclinks:login_sent'
 MAGICLINKS_SIGNUP_LOGIN_REDIRECT_URL = 'no_login'
 MAGICLINKS_REGISTRATION_SALT = 'magiclinks'
+MAGICLINKS_CREATE_USER_CALLABLE = 'tests.settings:create_user'

@@ -8,7 +8,6 @@ from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.core import signing
 from django.core.mail import send_mail
@@ -23,16 +22,6 @@ from magiclinks.utils import get_url_path
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
-
-
-def create_user(*, email: str) -> None:
-    """Create `user`."""
-    logger.info('Creating user')
-    email = email.lower()
-    password: str = make_password(None)
-    user = User(email=email, password=password, is_staff=False, is_superuser=False)
-    user.username = str(user.pk).replace('-', '')
-    user.save()
 
 
 def create_magiclink(*, email: str, domain: str, url_name: str, next_url: str, limit_seconds: int) -> str:

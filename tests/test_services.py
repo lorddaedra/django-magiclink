@@ -10,25 +10,12 @@ from django.urls import reverse
 
 from magiclinks.exceptions import MagicLinkError
 from magiclinks.models import MagicLink
-from magiclinks.services import create_magiclink, create_user, send_magiclink
+from magiclinks.services import create_magiclink, send_magiclink
 from magiclinks.settings import REGISTRATION_SALT
 
 from .fixtures import magic_link, user  # NOQA: F401
 
 User = get_user_model()
-
-
-@pytest.mark.django_db
-def test_create_user(settings):
-    email = 'Test@example.com'
-    create_user(email=email)
-    usr = User.objects.latest()
-    assert usr.email == email.lower()
-    assert usr.username != email
-    assert len(usr.username) == 32
-    assert len(usr.password) > 40
-    assert usr.is_staff is False
-    assert usr.is_superuser is False
 
 
 @pytest.mark.django_db
