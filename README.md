@@ -174,6 +174,9 @@ MAGICLINKS_LOGIN_SENT_REDIRECT_URL = 'magiclinks:login_sent'
 
 # Salt used for token signing
 MAGICLINKS_REGISTRATION_SALT = 'magiclinks'
+
+# Callable used for creating users in format: `<some_package.module>:<function_name>`
+MAGICLINKS_CREATE_USER_CALLABLE = 'customauth.services:create_user'
 ```
 
 

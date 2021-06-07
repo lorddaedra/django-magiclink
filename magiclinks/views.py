@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from importlib import import_module
 from urllib.parse import unquote_plus
 
 from django.conf import settings
@@ -18,11 +19,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 
-from . import settings as ml_settings
 from .exceptions import MagicLinkError
 from .forms import LoginForm, SignupForm
-from .services import create_magiclink, create_user, send_magiclink
-from .settings import REGISTRATION_SALT
+from .services import create_magiclink, send_magiclink
+from .settings import CREATE_USER_CALLABLE, LOGIN_SENT_REDIRECT_URL, REGISTRATION_SALT, SIGNUP_LOGIN_REDIRECT_URL
 from .utils import get_url_path
 
 User = get_user_model()
@@ -44,7 +44,7 @@ class LoginView(TemplateView):
         'button_background_color': '#0078be',
         'button_text_color': '#ffffff',
     }
-    next_page: str = ml_settings.LOGIN_SENT_REDIRECT_URL
+    next_page: str = LOGIN_SENT_REDIRECT_URL
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -129,7 +129,7 @@ class SignupView(TemplateView):
         'button_background_color': '#0078be',
         'button_text_color': '#ffffff',
     }
-    next_page: str = ml_settings.LOGIN_SENT_REDIRECT_URL
+    next_page: str = LOGIN_SENT_REDIRECT_URL
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -146,11 +146,12 @@ class SignupView(TemplateView):
 
         email = form.cleaned_data['email']
 
-        create_user(email=email)
+        module_name, callable_name = CREATE_USER_CALLABLE.split(':')
+        getattr(import_module(module_name), callable_name)(email=email)
 
         redirect_to: str = request.POST.get('next', request.GET.get('next', ''))
         url_is_safe: bool = url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={request.get_host()}, require_https=True)
-        next_url: str = redirect_to if url_is_safe else get_url_path(ml_settings.SIGNUP_LOGIN_REDIRECT_URL)
+        next_url: str = redirect_to if url_is_safe else get_url_path(SIGNUP_LOGIN_REDIRECT_URL)
 
         magiclink = create_magiclink(email=email, domain=str(get_current_site(request).domain), url_name=self.login_verify_url_name, next_url=next_url,
                                      limit_seconds=self.limit_seconds)
